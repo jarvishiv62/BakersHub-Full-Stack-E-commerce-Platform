@@ -42,7 +42,6 @@
   </button>
 </div>
 
-
 <!-- Products Section -->
 <section class="products-section pt-5">
     <div class="container products-container text-center">
@@ -51,159 +50,174 @@
             <p>Handcrafted with love and the finest ingredients, each bite is a celebration of flavor and tradition.</p>
         </div>
 
-    <!-- Product Filters -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <select class="form-select">
-                <option selected>All Categories</option>
-                <option>Cakes</option>
-                <option>Bread</option>
-                <option>Pastries</option>
-                <option>Cookies</option>
-                <option>Desserts</option>
-            </select>
-        </div>
-        <div class="col-md-3 mb-3">
-            <select class="form-select">
-                <option selected>Sort By</option>
-                <option>Price: Low to High</option>
-                <option>Price: High to Low</option>
-                <option>Newest</option>
-                <option>Most Popular</option>
-            </select>
-        </div>
-        <div class="col-md-6 text-md-end">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search products...">
-                <button class="btn btn-outline-secondary" type="button">Search</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Products Grid -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        @php
-            $products = [
-                ['name' => 'Chocolate Fudge Cake', 'price' => 249, 'category' => 'Cakes', 'image' => 'pro1.jpg'],
-                ['name' => 'Sourdough Bread', 'price' => 99, 'category' => 'Bread', 'image' => 'pro2.webp'],
-                ['name' => 'Croissant', 'price' => 350, 'category' => 'Pastries', 'image' => 'pro3.jpeg'],
-                ['name' => 'Chocolate Chip Cookies', 'price' => 199, 'category' => 'Cookies', 'image' => 'pro4.jpg'],
-                ['name' => 'Red Velvet Cupcake', 'price' => 325, 'category' => 'Desserts', 'image' => 'pro5.webp'],
-                ['name' => 'Baguette', 'price' => 299, 'category' => 'Bread', 'image' => 'pro6.jpeg']
-            ];
-        @endphp
-
-        @foreach($products as $product)
-        <div class="col">
-            <div class="card h-100 product-card shadow-sm">
-                <div class="position-relative">
-                    <img src="{{asset('images/home/' . $product['image'])}}" class="card-img-top" alt="{{ $product['name'] }}">
-                    <span class="position-absolute top-0 end-0 bg-danger text-white small px-2 py-1 m-2 rounded">{{ $product['category'] }}</span>
+        <!-- Product Filters -->
+        <form action="{{ route('products') }}" method="GET">
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <select name="category" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Categories</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category }}" {{ $selectedCategory === $category ? 'selected' : '' }}>
+                                {{ $category }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">{{ $product['name'] }}</h5>
-                    <p class="card-text text-muted mb-3">Delicious {{ strtolower($product['category']) }} made with premium ingredients and baked fresh daily.</p>
-                    <div class="mt-auto d-flex justify-content-between align-items-center">
-                        <span class="h5 mb-0 text-primary">Rs {{ number_format($product['price'], 2) }}</span>
-                        <button class="btn btn-primary ">
-                            <i class="bi bi-cart-plus me-1"></i> Add to Cart
+                <div class="col-md-3 mb-3">
+                    <select name="sort" class="form-select" onchange="this.form.submit()">
+                        <option value="">Sort By</option>
+                        <option value="price_asc" {{ $selectedSort === 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
+                        <option value="price_desc" {{ $selectedSort === 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control" placeholder="Search products..." 
+                               value="{{ $searchQuery ?? '' }}">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="bi bi-search"></i> Search
                         </button>
+                        @if($searchQuery || $selectedCategory || $selectedSort)
+                            <a href="{{ route('products') }}" class="btn btn-outline-danger ms-2">
+                                <i class="bi bi-x-lg"></i> Clear
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>
-        </div>
-        @endforeach
-    </div>
+        </form>
 
-    <!-- Pagination -->
-    <div class="row mt-5">
-        <div class="col-12">
-            <nav aria-label="Product pagination" class="pagination-wrapper">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item">
-                        <a class="page-link page-prev" href="#" aria-label="Previous">
-                            <i class="bi bi-chevron-left"></i>
-                            <span>Previous</span>
-                        </a>
-                    </li>
-                    <li class="page-item active">
-                        <a class="page-link" href="#">1</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">2</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">3</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">4</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">5</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link page-next" href="#" aria-label="Next">
-                            <span>Next</span>
-                            <i class="bi bi-chevron-right"></i>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
+        @if(count($products) > 0)
+            <!-- Products Grid -->
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                @foreach($products as $product)
+                <div class="col">
+                    <div class="card h-100 product-card shadow-sm">
+                        <div class="position-relative">
+                            <img src="{{ asset($product['image']) }}" class="card-img-top" alt="{{ $product['name'] }}" style="height: 200px; object-fit: cover;">
+                            <span class="position-absolute top-0 end-0 bg-danger text-white small px-2 py-1 m-2 rounded">
+                                {{ $product['category'] }}
+                            </span>
+                            @if(isset($product['rating']))
+                            <div class="position-absolute bottom-0 start-0 m-2">
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-star-fill"></i> {{ number_format($product['rating'], 1) }}
+                                    <small class="text-muted">({{ $product['reviews'] ?? 0 }} reviews)</small>
+                                </span>
+                            </div>
+                            @endif
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ $product['name'] }}</h5>
+                            <p class="card-text text-muted mb-3">{{ $product['description'] ?? 'Delicious ' . strtolower($product['category']) . ' made with premium ingredients and baked fresh daily.' }}</p>
+                            <div class="mt-auto d-flex justify-content-between align-items-center">
+                                <span class="h5 mb-0 text-primary">Rs {{ number_format($product['price'], 2) }}</span>
+                                <button class="btn btn-primary add-to-cart" data-product-id="{{ $product['id'] }}">
+                                    <i class="bi bi-cart-plus me-1"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+
+            <!-- Pagination -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <nav aria-label="Product pagination" class="pagination-wrapper">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        @else
+            <div class="alert alert-info mt-4">
+                <h4 class="alert-heading">No products found!</h4>
+                <p>We couldn't find any products matching your search criteria. Please try different filters.</p>
+                <a href="{{ route('products') }}" class="btn btn-primary mt-2">View All Products</a>
+            </div>
+        @endif
     </div>
 </section>
 
 <!-- Features Section -->
-
-<section class="features-section pb-5">
-    <div class="container row mt-5">
-            <div class="col-12 text-center">
-            <h1 class="display-5 fw-bold">Our Unique Features</h1>
-            <p class="lead">Experience the art of baking with Wish-Bakery</p>
-        </div>
+<section class="features-section py-5 bg-light">
+    <div class="container">
         <div class="row g-4">
-            <div class="col-4">
-                <div class="feature-box">
-                    <i class="bi bi-truck"></i>
-                    <h5>Free Shipping</h5>
-                    <p>On orders over Rs500</p>
+            <div class="col-md-4">
+                <div class="text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-truck fs-1 text-primary"></i>
+                    </div>
+                    <h3>Free Delivery</h3>
+                    <p class="text-muted">On all orders above Rs. 1000</p>
                 </div>
             </div>
-            <div class="col-4">
-                <div class="feature-box">
-                    <i class="bi bi-arrow-clockwise"></i>
-                    <h5>Fresh Daily</h5>
-                    <p>Baked fresh every morning</p>
+            <div class="col-md-4">
+                <div class="text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-arrow-counterclockwise fs-1 text-primary"></i>
+                    </div>
+                    <h3>Easy Returns</h3>
+                    <p class="text-muted">7-day return policy</p>
                 </div>
             </div>
-            <div class="col-4">
-                <div class="feature-box">
-                    <i class="bi bi-shield-check"></i>
-                    <h5>Quality Guaranteed</h5>
-                    <p>100% satisfaction</p>
+            <div class="col-md-4">
+                <div class="text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-shield-check fs-1 text-primary"></i>
+                    </div>
+                    <h3>Secure Payment</h3>
+                    <p class="text-muted">100% secure payment</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
-@endsection
-
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/products.css') }}">
-@endpush
 
 @push('scripts')
 <script>
-    // Add any product-related JavaScript here
-    document.addEventListener('DOMContentLoaded', function() {
-        // Example: Add to cart functionality
-        document.querySelectorAll('.btn-add-to-cart').forEach(button => {
-            button.addEventListener('click', function() {
-                const productName = this.closest('.product-card').querySelector('.card-title').textContent;
-                alert(`Added ${productName} to cart!`);
-            });
+    // Add to cart functionality
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+            // Add your cart logic here
+            console.log('Added to cart:', productId);
+            
+            // Show success message
+            const toast = new bootstrap.Toast(document.getElementById('addedToCartToast'));
+            toast.show();
         });
     });
 </script>
 @endpush
- 
+
+<!-- Success Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="addedToCartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-success text-white">
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            <i class="bi bi-check-circle-fill text-success me-2"></i>
+            Item added to cart successfully!
+        </div>
+    </div>
+</div>
+
+@endsection

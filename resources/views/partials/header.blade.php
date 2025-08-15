@@ -1,16 +1,20 @@
 <header class="site-header">
-    <!-- Main Navigation -->
     <nav class="navbar navbar-expand-lg">
         <div class="container">
             <!-- Brand Logo -->
             <a class="navbar-brand" href="{{ url('/') }}" aria-label="Home">
-                <img src="{{ asset('images/home/logo.png') }}" alt="{{ config('app.name') }}" class="main-logo">
+                <img src="{{ $settings['logo'] }}" alt="{{ $settings['site_name'] }}" class="main-logo">
             </a>
 
             <!-- Mobile Menu Toggle & Cart -->
             <div class="d-flex align-items-center order-lg-3">
                 <a href="{{ route('cart') }}" class="nav-icon cart-icon position-relative" aria-label="Shopping Cart">
                     <i class="fas fa-shopping-bag" aria-hidden="true"></i>
+                    @if($settings['cart_count'] > 0)
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                            {{ $settings['cart_count'] }}
+                        </span>
+                    @endif
                 </a>
                 <button class="navbar-toggler" type="button" 
                         data-bs-toggle="collapse" 
@@ -25,172 +29,75 @@
             <!-- Main Navigation Menu -->
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav mx-auto main-nav">
-                    <!-- Products Dropdown -->
-                    <li class="nav-item dropdown mega-dropdown">
-                        <a class="nav-link dropdown-toggle" 
-                           href="{{ route('products') }}" 
-                           id="productsDropdown" 
-                           role="button" 
-                           data-bs-toggle="dropdown" 
-                           aria-expanded="false" 
-                           aria-haspopup="true" 
-                           data-has-dropdown="true">
-                           <h4>Products</h4>
-                        </a>
-                        <div class="dropdown-menu mega-menu" aria-labelledby="shopDropdown" data-bs-auto-close="outside">
-                            <div class="container">
-                                <div class="row g-4">
-                                    <div class="col-lg-3">
-                                        <h5 class="mega-menu-title">Cupcakes</h5>
-                                        <ul class="mega-menu-list">
-                                            <li><a href="#">Classic Cupcakes</a></li>
-                                            <li><a href="#">Seasonal Cupcakes</a></li>
-                                            <li><a href="#">Mini Cupcakes</a></li>
-                                            <li><a href="#">Cupcake Cakes</a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <h5 class="mega-menu-title">Cakes</h5>
-                                        <ul class="mega-menu-list">
-                                            <li><a href="#">Layer Cakes</a></li>
-                                            <li><a href="#">Cheesecakes</a></li>
-                                            <li><a href="#">Celebration Cakes</a></li>
-                                            <li><a href="#">Custom Cakes</a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <h5 class="mega-menu-title">Cookies & Bars</h5>
-                                        <ul class="mega-menu-list">
-                                            <li><a href="#">Cookies</a></li>
-                                            <li><a href="#">Brownies</a></li>
-                                            <li><a href="#">Bars & Bites</a></li>
-                                            <li><a href="#">Gift Boxes</a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <h5 class="mega-menu-title">Order Online</h5>
-                                        <ul class="mega-menu-list">
-                                            <li><a href="#">Fast Delivery</a></li>
-                                            <li><a href="#">Local Delivery</a></li>
-                                            <li><a href="#">Pickup at Store</a></li>
-                                        </ul>
-                                    </div>
+                    @foreach($navigation as $key => $item)
+                        @php
+                            $hasDropdown = isset($item['items']) || isset($item['columns']);
+                            $isMegaMenu = $hasDropdown && ($item['mega_menu'] ?? false);
+                        @endphp
+                        
+                        <li class="nav-item {{ $isMegaMenu ? 'mega-dropdown' : 'dropdown' }}">
+                            <a class="nav-link dropdown-toggle" 
+                               href="{{ $item['url'] }}" 
+                               id="{{ $key }}Dropdown" 
+                               role="button" 
+                               data-bs-toggle="{{ $hasDropdown ? 'dropdown' : '' }}" 
+                               aria-expanded="false" 
+                               aria-haspopup="{{ $hasDropdown ? 'true' : 'false' }}"
+                               {{ $hasDropdown ? 'data-has-dropdown="true"' : '' }}>
+                                <h4>{{ $item['title'] }}</h4>
+                            </a>
 
-                                </div>
-                                <div class="row mt-4">
-                                    <div class="col-12 text-center">
-                                        <a href="{{ route('products') }}" class="btn btn-outline-dark">
-                                            View All Products
-                                        </a>
+                            @if($hasDropdown)
+                                @if($isMegaMenu)
+                                    <div class="dropdown-menu mega-menu" aria-labelledby="{{ $key }}Dropdown" data-bs-auto-close="outside">
+                                        <div class="container">
+                                            <div class="row g-4">
+                                                @foreach($item['columns'] as $column)
+                                                    <div class="col-lg-3">
+                                                        <h5 class="mega-menu-title">{{ $column['title'] }}</h5>
+                                                        <ul class="mega-menu-list">
+                                                            @foreach($column['items'] as $subItem)
+                                                                @if(!isset($subItem['auth']) || (auth()->check() && $subItem['auth']))
+                                                                    <li><a href="{{ $subItem['url'] }}">{{ $subItem['name'] }}</a></li>
+                                                                @endif
+                                                            @endforeach
+                                                        </ul>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                            @if(isset($item['view_all']))
+                                                <div class="row mt-4">
+                                                    <div class="col-12 text-center">
+                                                        <a href="{{ $item['url'] }}" class="btn btn-outline-dark">
+                                                            View All {{ $item['title'] }}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <!-- Catering Dropdown -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" 
-                           href="{{ route('catering') }}" 
-                           id="cateringDropdown" 
-                           role="button" 
-                           data-bs-toggle="dropdown" 
-                           aria-expanded="false" 
-                           aria-haspopup="true" 
-                           data-has-dropdown="true">
-                            <h4>Catering</h4>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="cateringDropdown">
-                            <li><a class="dropdown-item" href="{{ route('catering') }}#birthday">Birthday Cakes</a></li>
-                            <li><a class="dropdown-item" href="{{ route('catering') }}#wedding">Wedding Cakes</a></li>
-                            <li><a class="dropdown-item" href="{{ route('catering') }}#events">Special Events</a></li>
-                        </ul>
-                    </li>
-                    <!-- Account Dropdown -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" 
-                           href="{{ route('account') }}" 
-                           id="accountDropdown" 
-                           role="button" 
-                           data-bs-toggle="dropdown" 
-                           aria-expanded="false" 
-                           aria-haspopup="true"
-                           data-has-dropdown="true">
-                            <h4>Account</h4>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="accountDropdown">
-                            @auth
-                                <li><a class="dropdown-item" href="{{ route('account') }}">My Account</a></li>
-                                <li><a class="dropdown-item" href="#">Order History</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item">Logout</button>
-                                    </form>
-                                </li>
-                            @else
-                                <li><a class="dropdown-item" href="#">Login</a></li>
-                                <li><a class="dropdown-item" href="#">Register</a></li>
-                            @endauth
-                        </ul>
-                    </li>
-
-                    <!-- Contact Dropdown -->
-                    <li class="nav-item dropdown mega-dropdown">
-                        <a class="nav-link dropdown-toggle" 
-                           href="{{ route('contact') }}" 
-                           id="contactDropdown" 
-                           role="button" 
-                           data-bs-toggle="dropdown" 
-                           aria-expanded="false" 
-                           aria-haspopup="true" 
-                           data-has-dropdown="true">
-                           <h4>Contact</h4>
-                        </a>
-                        <div class="dropdown-menu mega-menu" aria-labelledby="shopDropdown" data-bs-auto-close="outside">
-                            <div class="container">
-                                <div class="row g-6">
-                                    <div class="col-lg-4">
-                                        <h5 class="mega-menu-title">Talk To Us</h5>
-                                        <ul class="mega-menu-list">
-                                            <li><a href="{{ route('contact') }}" class="dropdown-item">Contact Us</a></li>
-                                            <li><a href="#" class="dropdown-item">Newsletter</a></li>
-                                            <li><a href="#" class="dropdown-item">FAQ</a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-lg-4">
-                                        <h5 class="mega-menu-title">Our Locations</h5>
-                                        <ul class="mega-menu-list">
-                                            <li><a href="#" class="dropdown-item">Varanasi</a></li>
-                                            <li><a href="#" class="dropdown-item">Bhadohi</a></li>
-                                            <li><a href="#" class="dropdown-item">Mirzapur</a></li>
-                                            <li><a href="#" class="dropdown-item">Ghazipur</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>  
-                    </li>
-
-
-                    <!-- About Link -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" 
-                           href="{{ route('about') }}" 
-                           id="aboutDropdown" 
-                           role="button" 
-                           data-bs-toggle="dropdown" 
-                           aria-expanded="false" 
-                           aria-haspopup="true" 
-                           data-has-dropdown="true">
-                            <h4>Our Story</h4>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
-                            <li><a class="dropdown-item" href="{{ route('about') }}#mission">Mission</a></li>
-                            <li><a class="dropdown-item" href="{{ route('about') }}#vision">Vision</a></li>
-                            <li><a class="dropdown-item" href="{{ route('about') }}#values">careers</a></li>
-                        </ul>
-                    </li>
+                                @else
+                                    <ul class="dropdown-menu" aria-labelledby="{{ $key }}Dropdown">
+                                        @foreach($item['items'] as $subItem)
+                                            @if((!isset($subItem['auth']) && !isset($subItem['guest'])) || 
+                                                (auth()->check() && isset($subItem['auth'])) ||
+                                                (!auth()->check() && isset($subItem['guest'])))
+                                                <li>
+                                                    @if(isset($subItem['divider']))
+                                                        <hr class="dropdown-divider">
+                                                    @else
+                                                        <a class="dropdown-item" href="{{ $subItem['url'] }}">
+                                                            {{ $subItem['name'] }}
+                                                        </a>
+                                                    @endif
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
+                                @endif
+                            @endif
+                        </li>
+                    @endforeach
                 </ul>
             </div>
         </div>
@@ -199,107 +106,54 @@
 
 @push('scripts')
 <script>
+(function() {
+    // Wait for DOM and all scripts to be fully loaded
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize Bootstrap dropdowns
-        const dropdownElements = document.querySelectorAll('.dropdown-toggle');
-        const dropdowns = [];
-        
-        // Handle dropdown click behavior
-        function handleDropdownClick(e) {
-            if (window.innerWidth <= 991.98) { // Mobile behavior
-                e.preventDefault();
-                const dropdown = bootstrap.Dropdown.getInstance(this);
-                if (dropdown) {
-                    dropdown.toggle();
-                }
-            } else { // Desktop behavior
-                const dropdownMenu = this.nextElementSibling;
-                if (!dropdownMenu || !dropdownMenu.classList.contains('show')) {
-                    window.location.href = this.href;
-                }
-            }
-        }
+        // Initialize dropdowns after a small delay to ensure Bootstrap is loaded
+        setTimeout(initializeDropdowns, 100);
+    });
+
+    let hoverTimeout;
+    
+    function initializeDropdowns() {
+        const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
         
         // Initialize all dropdowns
-        dropdownElements.forEach(function(dropdownToggle) {
-            const dropdown = new bootstrap.Dropdown(dropdownToggle, {
+        dropdownToggles.forEach(toggle => {
+            // Initialize Bootstrap dropdown
+            const dropdown = new bootstrap.Dropdown(toggle, {
                 autoClose: true,
                 popperConfig: (defaultConfig) => ({
                     ...defaultConfig,
                     strategy: 'fixed'
                 })
             });
-            dropdowns.push(dropdown);
             
-            // Add click handler for dropdown toggles with links
-            if (dropdownToggle.hasAttribute('data-has-dropdown')) {
-                dropdownToggle.addEventListener('click', handleDropdownClick);
-            }
+            // Add click handler for mobile
+            toggle.addEventListener('click', handleMobileClick);
         });
         
-        // Close dropdown when clicking on a dropdown item
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.dropdown-item')) {
-                const dropdown = e.target.closest('.dropdown');
-                if (dropdown) {
-                    const toggle = dropdown.querySelector('.dropdown-toggle');
-                    if (toggle) {
-                        const bsDropdown = bootstrap.Dropdown.getInstance(toggle);
-                        if (bsDropdown) {
-                            bsDropdown.hide();
-                        }
-                    }
-                }
-            }
-        });
-        
-        // Handle dropdown hover for desktop
-        function setupDropdownHover() {
-            const dropdowns = document.querySelectorAll('.dropdown');
-            
-            function handleMouseEnter() {
-                if (window.innerWidth > 991.98) {
-                    const toggle = this.querySelector('[data-bs-toggle="dropdown"]');
-                    if (toggle) {
-                        const dropdown = bootstrap.Dropdown.getInstance(toggle);
-                        if (dropdown) {
-                            dropdown.show();
-                        }
-                    }
-                }
-            }
-            
-            function handleMouseLeave() {
-                if (window.innerWidth > 991.98) {
-                    const toggle = this.querySelector('[data-bs-toggle="dropdown"]');
-                    if (toggle) {
-                        const dropdown = bootstrap.Dropdown.getInstance(toggle);
-                        if (dropdown) {
-                            // Add a small delay to prevent accidental closing
-                            setTimeout(() => {
-                                const isHovered = this.matches(':hover') || 
-                                                this.querySelector('.dropdown-menu:hover') !== null;
-                                if (!isHovered) {
-                                    dropdown.hide();
-                                }
-                            }, 100);
-                        }
-                    }
-                }
-            }
-            
-            // Add event listeners
-            dropdowns.forEach(dropdown => {
-                // Remove existing listeners to prevent duplicates
-                dropdown.removeEventListener('mouseenter', handleMouseEnter);
-                dropdown.removeEventListener('mouseleave', handleMouseLeave);
-                
-                // Add new listeners
-                dropdown.addEventListener('mouseenter', handleMouseEnter);
-                dropdown.addEventListener('mouseleave', handleMouseLeave);
-            });
+        // Add event listeners for desktop hover
+        if (window.innerWidth > 991.98) {
+            document.addEventListener('mouseover', handleDesktopHover);
+            document.addEventListener('mouseout', handleDesktopLeave);
+            document.addEventListener('click', handleDesktopClickOutside);
         }
         
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            // Re-initialize event listeners when crossing the breakpoint
+            if (window.innerWidth > 991.98) {
+                document.addEventListener('mouseover', handleDesktopHover);
+                document.addEventListener('mouseout', handleDesktopLeave);
+                document.addEventListener('click', handleDesktopClickOutside);
+            } else {
+                document.removeEventListener('mouseover', handleDesktopHover);
+                document.removeEventListener('mouseout', handleDesktopLeave);
+                document.removeEventListener('click', handleDesktopClickOutside);
+            }
+        });
+
         // Handle scroll effect for header
         function handleScroll() {
             const header = document.querySelector('.site-header');
@@ -311,28 +165,95 @@
                 header.classList.remove('scrolled');
             }
         }
-        
-        // Initialize everything
-        setupDropdownHover();
-        window.addEventListener('scroll', handleScroll);
-        handleScroll(); // Initialize scroll state
 
-        // Re-initialize on window resize
-        let resizeTimer;
-        window.addEventListener('resize', function() {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(function() {
-                setupDropdownHover();
-            }, 250);
-        });
+        // Initialize scroll handler
+        window.addEventListener('scroll', handleScroll);
+        handleScroll(); // Call once on load
+    }
+    
+    // Desktop hover handlers
+    function handleDesktopHover(e) {
+        clearTimeout(hoverTimeout);
+        const dropdown = e.target.closest('.dropdown');
+        if (!dropdown) return;
         
-        // Cleanup function for when the component is removed
-        return () => {
-            dropdowns.forEach(dropdown => dropdown.dispose());
-            window.removeEventListener('scroll', handleScroll);
-            window.removeEventListener('resize', setupDropdownHover);
-            clearTimeout(resizeTimer);
-        };
-    });
+        const toggle = dropdown.querySelector('[data-bs-toggle="dropdown"]');
+        if (!toggle) return;
+        
+        // Hide current dropdown if different
+        if (window.currentDropdown && window.currentDropdown !== dropdown) {
+            const currentToggle = window.currentDropdown.querySelector('[data-bs-toggle="dropdown"]');
+            if (currentToggle) {
+                const bsDropdown = bootstrap.Dropdown.getInstance(currentToggle);
+                if (bsDropdown) bsDropdown.hide();
+            }
+        }
+        
+        // Show new dropdown
+        const bsDropdown = bootstrap.Dropdown.getInstance(toggle) || new bootstrap.Dropdown(toggle);
+        if (bsDropdown) {
+            bsDropdown.show();
+            window.currentDropdown = dropdown;
+        }
+    }
+    
+    function handleDesktopLeave(e) {
+        const dropdown = e.target.closest('.dropdown');
+        if (!dropdown || !window.currentDropdown) return;
+        
+        const relatedTarget = e.relatedTarget || e.toElement;
+        if (relatedTarget && dropdown.contains(relatedTarget)) return;
+        
+        hoverTimeout = setTimeout(() => {
+            const toggle = window.currentDropdown?.querySelector('[data-bs-toggle="dropdown"]');
+            if (toggle) {
+                const bsDropdown = bootstrap.Dropdown.getInstance(toggle);
+                if (bsDropdown && !toggle.matches(':hover')) {
+                    bsDropdown.hide();
+                    window.currentDropdown = null;
+                }
+            }
+        }, 100);
+    }
+    
+    function handleDesktopClickOutside(e) {
+        if (!e.target.closest('.dropdown-menu') && !e.target.closest('[data-bs-toggle="dropdown"]')) {
+            document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                const toggle = menu.previousElementSibling;
+                if (toggle) {
+                    const bsDropdown = bootstrap.Dropdown.getInstance(toggle);
+                    if (bsDropdown) bsDropdown.hide();
+                }
+            });
+        }
+    }
+    
+    // Mobile click handler
+    function handleMobileClick(e) {
+        if (window.innerWidth > 991.98) return;
+        
+        const toggle = e.target.closest('[data-bs-toggle="dropdown"]');
+        if (!toggle) return;
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const bsDropdown = bootstrap.Dropdown.getInstance(toggle) || new bootstrap.Dropdown(toggle);
+        
+        if (toggle.getAttribute('aria-expanded') === 'true') {
+            bsDropdown.hide();
+        } else {
+            // Hide other open dropdowns
+            document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                const otherToggle = menu.previousElementSibling;
+                if (otherToggle && otherToggle !== toggle) {
+                    const otherDropdown = bootstrap.Dropdown.getInstance(otherToggle);
+                    if (otherDropdown) otherDropdown.hide();
+                }
+            });
+            bsDropdown.show();
+        }
+    }
+})();
 </script>
 @endpush
