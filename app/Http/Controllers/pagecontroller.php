@@ -9,6 +9,10 @@ class PageController extends Controller
     /**
      * Display the about page with all its sections
      */
+    public function login()
+    {
+        return view('auth.login');
+    }
     public function about()
     {
         $data = [

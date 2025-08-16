@@ -2,10 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Occasion;
+
 class HomeController extends Controller
 {
     public function index()
     {
+        // Fetch active occasions from the database
+        $occasions = Occasion::where('is_active', true)
+            ->orderBy('sort_order', 'asc')
+            ->get()
+            ->map(function($occasion) {
+                return [
+                    'title' => $occasion->name,
+                    'image' => asset('storage/' . $occasion->image),
+                    'alt' => $occasion->name . ' Gifts',
+                    'description' => $occasion->description,
+                    'route' => 'products?occasion=' . strtolower($occasion->slug)
+                ];
+            });
+
         $featuredProducts = [
             [
                 'id' => 1, 
@@ -38,51 +54,6 @@ class HomeController extends Controller
                 'image' => 'images/home/cake4.webp',
                 'description' => 'Delightful mix of chocolate chip and more',
                 'category' => 'Cakes'
-            ]
-        ];
-
-        $occasions = [
-            [
-                'title' => 'Birthday',
-                'image' => 'images/home/cake5.webp',
-                'alt' => 'Birthday Gifts',
-                'description' => 'Make every birthday special with our custom cakes and treats.',
-                'route' => 'products?occasion=birthday'
-            ],
-            [
-                'title' => 'Anniversary Specials',
-                'image' => 'images/home/ocake3.jpeg',
-                'alt' => 'Anniversary Gifts',
-                'description' => 'Celebrate love with our romantic dessert collections.',
-                'route' => 'products?occasion=anniversary'
-            ],
-            [
-                'title' => 'Wedding Favors',
-                'image' => 'images/home/ocake1.jpg',
-                'alt' => 'Wedding Gifts',
-                'description' => 'Elegant treats for your special day.',
-                'route' => 'products?occasion=wedding'
-            ],
-            [
-                'title' => 'Corporate Gifts',
-                'image' => 'images/home/ocake2.webp',
-                'alt' => 'Corporate Gifts',
-                'description' => 'Impress your clients with our premium gift boxes.',
-                'route' => 'products?occasion=corporate'
-            ],
-            [
-                'title' => 'Holiday Specials',
-                'image' => 'images/home/cake.webp',
-                'alt' => 'Holiday Gifts',
-                'description' => 'Festive treats for every holiday season.',
-                'route' => 'products?occasion=holiday'
-            ],
-            [
-                'title' => 'Surprise Gift',
-                'image' => 'images/home/ocake4.jpg',
-                'alt' => 'Surprise Gifts',
-                'description' => 'Surprise your loved ones with our custom cakes.',
-                'route' => 'products?occasion=surprise'
             ]
         ];
 
