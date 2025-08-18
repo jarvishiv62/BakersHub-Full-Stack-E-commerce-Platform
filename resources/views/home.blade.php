@@ -148,33 +148,80 @@
         </div>
     </section>
 
-    <!-- Testimonials -->
-    <section class="home-section testimonials-bg py-5">
+    <!-- Testimonials Carousel -->
+    <section class="testimonials-bg py-5" aria-label="Customer Testimonials">
         <div class="container">
-            <div class="section-title text-center">
-                <h2>What Our Customers Say</h2>
-                <p>Hear from people who love our bakery</p>
+            <div class="section-header text-center mb-5">
+                <h2 class="display-5 fw-bold mb-3 text-center">What Our Customers Say</h2>
+                <p class="lead text-muted text-center">Hear from people who love our bakery</p>
             </div>
             
-            <div class="testimonials-slider">
-                @foreach($testimonials as $testimonial)
-                <div class="testimonial-item">
-                    <div class="stars mb-3">
-                        @for($i = 0; $i < $testimonial['rating']; $i++)
-                            <i class="bi bi-star-fill text-warning"></i>
-                        @endfor
-                        @for($i = $testimonial['rating']; $i < 5; $i++)
-                            <i class="bi bi-star text-warning"></i>
-                        @endfor
+            @if(count($testimonials) > 0)
+            <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="8000">
+                <!-- Slides -->
+                <div class="carousel-inner">
+                    @php
+                        // Get all active testimonials ordered by creation date
+                        $testimonialsArray = $testimonials->sortBy('created_at')->values()->all();
+                        // Split into chunks of 2 testimonials each
+                        $chunks = array_chunk($testimonialsArray, 2);
+                    @endphp
+                    
+                    @foreach($chunks as $index => $chunk)
+                    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}" data-bs-interval="8000">
+                        <div class="row g-4">
+                            @foreach($chunk as $testimonial)
+                            <div class="col-md-6">
+                                <div class="testimonial-card h-100">
+                                    <div class="testimonial-content">
+                                        <div class="rating mb-3">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <i class="bi bi-star{{ $i <= $testimonial['rating'] ? '-fill' : '' }} {{ $i <= $testimonial['rating'] ? 'text-warning' : 'text-light' }}"></i>
+                                            @endfor
+                                            <span class="visually-hidden">Rating: {{ $testimonial['rating'] }} out of 5 stars</span>
+                                        </div>
+                                        
+                                        <div class="testimonial-text">
+                                            "{{ $testimonial['quote'] }}"
+                                        </div>
+                                        
+                                        <div class="testimonial-author mt-3">
+                                            <div class="author-icon">
+                                                <i class="bi bi-person-circle fs-3 text-primary"></i>
+                                            </div>
+                                            <div class="author-info">
+                                                <h6 class="mb-0 fw-bold">{{ $testimonial['name'] }}</h6>
+                                                <p class="text-muted small mb-0">{{ $testimonial['role'] }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
                     </div>
-                    <p class="testimonial-text">"{{ $testimonial['quote'] }}"</p>
-                    <div class="testimonial-author">
-                        <h5 class="t-name">{{ $testimonial['name'] }}</h5>
-                        <p class="t-role">{{ $testimonial['role'] }}</p>
-                    </div>
+                    @endforeach
                 </div>
-                @endforeach
+                
+                <!-- Controls -->
+                @if(count($testimonials) > 1)
+                <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous testimonial</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next testimonial</span>
+                </button>
+                @endif
             </div>
+            @else
+            <div class="text-center py-5">
+                <div class="alert alert-info">
+                    <p class="mb-0">No testimonials available at the moment. Check back soon!</p>
+                </div>
+            </div>
+            @endif
         </div>
     </section>
 

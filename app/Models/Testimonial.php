@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class Testimonial extends Model
 {
     use HasFactory;
 
@@ -16,13 +16,12 @@ class Product extends Model
      */
     protected $fillable = [
         'name',
-        'slug',
-        'description',
-        'price',
-        'category',
-        'image',
+        'role',
+        'quote',
         'rating',
-        'reviews_count'
+        'is_active',
+        'image',
+        'alt_text'
     ];
 
     /**
@@ -31,18 +30,7 @@ class Product extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'price' => 'decimal:2',
-        'rating' => 'decimal:1',
-        'reviews_count' => 'integer'
+        'is_active' => 'boolean',
+        'rating' => 'integer',
     ];
-
-    /**
-     * Get the URL for the product's image.
-     *
-     * @return string
-     */
-    public function getImageUrlAttribute()
-    {
-        return asset($this->image);
-    }
 }

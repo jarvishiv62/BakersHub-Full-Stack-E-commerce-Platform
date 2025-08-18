@@ -26,6 +26,14 @@
         <div class="col-md-3 mb-4">
             <div class="card bg-info text-white">
                 <div class="card-body">
+                    <h5 class="card-title">Total Testimonials</h5>
+                    <h2 class="mb-0">{{ \App\Models\Testimonial::count() }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
                     <h5 class="card-title">Total Users</h5>
                     <h2 class="mb-0">{{ \App\Models\User::count() }}</h2>
                 </div>
@@ -49,6 +57,16 @@
                         <div class="col-md-3 mb-3">
                             <a href="{{ route('admin.occasions.index') }}" class="btn btn-outline-primary w-100">
                                 <i class="bi bi-list-ul"></i> View All Occasions
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ route('admin.testimonials.create') }}" class="btn btn-success w-100">
+                                <i class="bi bi-plus-circle"></i> Add New Testimonial
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ route('admin.testimonials.index') }}" class="btn btn-outline-success w-100">
+                                <i class="bi bi-chat-square-quote"></i> View All Testimonials
                             </a>
                         </div>
                     </div>

@@ -94,7 +94,7 @@
                 <div class="col">
                     <div class="card h-100 product-card shadow-sm">
                         <div class="position-relative">
-                            <img src="{{ asset($product['image']) }}" class="card-img-top" alt="{{ $product['name'] }}" style="height: 200px; object-fit: cover;">
+                            <img src="{{ asset('storage/' . $product['image']) }}" class="card-img-top" alt="{{ $product['name'] }}" style="height: 200px; object-fit: cover;">
                             <span class="position-absolute top-0 end-0 bg-danger text-white small px-2 py-1 m-2 rounded">
                                 {{ $product['category'] }}
                             </span>

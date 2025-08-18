@@ -46,6 +46,16 @@
                                 <i class="bi bi-gift"></i> Occasions
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('admin.testimonials.index') }}" class="nav-link {{ request()->routeIs('admin.testimonials.*') ? 'active' : '' }}">
+                                <i class="bi bi-chat-square-quote"></i> Testimonials
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.products.index') }}" class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+                                <i class="bi bi-cart"></i> Products
+                            </a>
+                        </li>
                         <!-- Add more menu items here -->
                     </ul>
                     <hr>

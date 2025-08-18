@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Occasion;
+use App\Models\Testimonial;
 
 class HomeController extends Controller
 {
@@ -14,11 +15,11 @@ class HomeController extends Controller
             ->get()
             ->map(function($occasion) {
                 return [
-                    'title' => $occasion->name,
+                    'title' => $occasion->title,
                     'image' => asset('storage/' . $occasion->image),
-                    'alt' => $occasion->name . ' Gifts',
+                    'alt' => $occasion->alt_text,
                     'description' => $occasion->description,
-                    'route' => 'products?occasion=' . strtolower($occasion->slug)
+                    'route' => $occasion->route
                 ];
             });
 
@@ -57,20 +58,10 @@ class HomeController extends Controller
             ]
         ];
 
-        $testimonials = [
-            [
-                'name' => 'Anjali Mehta',
-                'role' => 'Food Enthusiast',
-                'quote' => 'Best pastries in town, their custom cakes made my wedding day magical!',
-                'rating' => 5
-            ],
-            [
-                'name' => 'Rahul Singh',
-                'role' => 'Regular Customer',
-                'quote' => 'Amazing texture, taste and service. Highly recommended!',
-                'rating' => 4
-            ]
-        ];
+        // Get all active testimonials, ordered by most recent first
+        $testimonials = Testimonial::where('is_active', true)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         $deliveryOptions = [
             [

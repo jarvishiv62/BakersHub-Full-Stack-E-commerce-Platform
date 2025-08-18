@@ -57,6 +57,12 @@ class OccasionController extends Controller
      * @param  \App\Models\Occasion  $occasion
      * @return \Illuminate\Http\Response
      */
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Occasion  $occasion
+     * @return void
+     */
     public function show(Occasion $occasion)
     {
         //
