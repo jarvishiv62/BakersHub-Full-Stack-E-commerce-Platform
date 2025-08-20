@@ -16,7 +16,6 @@ class Product extends Model
      */
     protected $fillable = [
         'name',
-        'slug',
         'description',
         'price',
         'category',
@@ -43,6 +42,21 @@ class Product extends Model
      */
     public function getImageUrlAttribute()
     {
-        return asset($this->image);
+        if (empty($this->image)) {
+            return asset('images/placeholder.jpg');
+        }
+        
+        // Check if the image is a full URL (for seeded data)
+        if (filter_var($this->image, FILTER_VALIDATE_URL)) {
+            return $this->image;
+        }
+        
+        // Check if the image exists in the public directory (for seeded images)
+        if (file_exists(public_path($this->image))) {
+            return asset($this->image);
+        }
+        
+        // Otherwise, assume it's in the storage directory
+        return asset('storage/' . $this->image);
     }
 }

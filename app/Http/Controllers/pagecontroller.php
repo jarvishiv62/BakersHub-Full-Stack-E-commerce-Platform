@@ -13,6 +13,22 @@ class PageController extends Controller
     {
         return view('auth.login');
     }
+    public function catering()
+    {
+        return view('catering');
+    }
+    public function account()
+    {
+        return view('account');
+    }
+    public function search()
+    {
+        return view('search');
+    }
+    public function contact()
+    {
+        return view('contact');
+    }
     public function about()
     {
         $data = [

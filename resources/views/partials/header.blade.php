@@ -6,9 +6,19 @@
                 <img src="{{ $settings['logo'] }}" alt="{{ $settings['site_name'] }}" class="main-logo">
             </a>
 
-            <!-- Mobile Menu Toggle & Cart -->
+            <!-- Mobile Menu Toggle, Login & Cart -->
             <div class="d-flex align-items-center order-lg-3">
-                <a href="{{ route('cart') }}" class="nav-icon cart-icon position-relative" aria-label="Shopping Cart">
+                @guest
+                    <a href="{{ route('login') }}" class="nav-icon me-3" aria-label="Login">
+                        <i class="fas fa-user" aria-hidden="true"></i>
+                    </a>
+                @else
+                    <a href="{{ route('account') }}" class="nav-icon me-3" aria-label="My Account">
+                        <i class="fas fa-user" aria-hidden="true"></i>
+                    </a>
+                @endguest
+                
+                <a href="{{ route('cart') }}" class="nav-icon cart-icon position-relative me-3" aria-label="Shopping Cart">
                     <i class="fas fa-shopping-bag" aria-hidden="true"></i>
                     @if($settings['cart_count'] > 0)
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">

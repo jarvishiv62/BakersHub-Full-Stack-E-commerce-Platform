@@ -12,9 +12,16 @@ class ProductController extends Controller
     /**
      * Display a listing of the products.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::latest()->paginate(10);
+        $query = Product::query();
+        
+        // Filter by active status if provided
+        if ($request->has('status') && in_array($request->status, ['0', '1'])) {
+            $query->where('is_active', $request->status);
+        }
+        
+        $products = $query->latest()->paginate(10);
         return view('admin.products.index', compact('products'));
     }
 
@@ -41,9 +48,6 @@ class ProductController extends Controller
             'rating' => 'nullable|numeric|min:0|max:5',
             'reviews_count' => 'nullable|integer|min:0',
         ]);
-
-        // Generate slug from name
-        $validated['slug'] = \Illuminate\Support\Str::slug($validated['name']);
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
@@ -74,15 +78,10 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'category' => 'required|string|max:255',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'rating' => 'nullable|numeric|min:0|max:5',
             'reviews_count' => 'nullable|integer|min:0',
         ]);
-
-        // Update slug if name has changed
-        if ($product->name !== $validated['name']) {
-            $validated['slug'] = \Illuminate\Support\Str::slug($validated['name']);
-        }
 
         if ($request->hasFile('image')) {
             // Delete old image if it exists
@@ -101,14 +100,18 @@ class ProductController extends Controller
     /**
      * Toggle product status (active/inactive).
      */
-    public function toggleStatus(Product $product)
+    public function toggleStatus(Request $request, Product $product)
     {
+        $request->validate([
+            'is_active' => 'required|boolean'
+        ]);
+
         $product->update([
-            'is_active' => !$product->is_active
+            'is_active' => $request->is_active
         ]);
 
         return response()->json([
-            'status' => 'success',
+            'success' => true,
             'is_active' => $product->is_active
         ]);
     }

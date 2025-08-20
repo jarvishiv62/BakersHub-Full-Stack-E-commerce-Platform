@@ -26,7 +26,16 @@
                             <th>Category</th>
                             <th>Price</th>
                             <th>Rating</th>
-                            <th>Status</th>
+                            <th>
+                                <div class="d-flex align-items-center">
+                                    <span>Status</span>
+                                    <select id="status-filter" class="form-select form-select-sm ms-2" style="width: auto;">
+                                        <option value="all" {{ !request()->has('status') ? 'selected' : '' }}>All</option>
+                                        <option value="1" {{ request()->input('status') === '1' ? 'selected' : '' }}>Active</option>
+                                        <option value="0" {{ request()->input('status') === '0' ? 'selected' : '' }}>Inactive</option>
+                                    </select>
+                                </div>
+                            </th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -53,14 +62,19 @@
                                     <small class="text-muted">({{ $product->reviews_count }})</small>
                                 </div>
                             </td>
-                            <td>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input toggle-status" type="checkbox" 
-                                           data-id="{{ $product->id }}" 
-                                           {{ $product->is_active ? 'checked' : '' }}>
-                                    <label class="form-check-label">{{ $product->is_active ? 'Active' : 'Inactive' }}</label>
-                                </div>
-                            </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="form-check form-switch me-2">
+                                            <input class="form-check-input status-toggle" 
+                                                   type="checkbox" 
+                                                   data-id="{{ $product->id }}"
+                                                   {{ $product->is_active ? 'checked' : '' }}>
+                                        </div>
+                                        <span class="status-badge {{ $product->is_active ? 'active' : 'inactive' }}">
+                                            {{ $product->is_active ? 'Active' : 'Inactive' }}
+                                        </span>
+                                    </div>
+                                </td>
                             <td>
                                 <div class="btn-group" role="group">
                                     <a href="{{ route('admin.products.edit', $product->id) }}" 
@@ -96,31 +110,89 @@
 </div>
 @endsection
 
+@push('styles')
+<style>
+    .status-badge {
+        cursor: pointer;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .status-badge.active {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+    .status-badge.inactive {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script>
-    $(document).ready(function() {
-        // Toggle product status
-        $('.toggle-status').change(function() {
-            const productId = $(this).data('id');
-            const isActive = $(this).is(':checked') ? 1 : 0;
+document.addEventListener('DOMContentLoaded', function() {
+    // Status toggle
+    const statusToggles = document.querySelectorAll('.status-toggle');
+    statusToggles.forEach(toggle => {
+        toggle.addEventListener('change', function() {
+            const productId = this.dataset.id;
+            const is_active = this.checked ? 1 : 0;
+            const row = this.closest('tr');
             
-            $.ajax({
-                url: "{{ url('admin/products') }}/" + productId + "/status",
-                type: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    is_active: isActive
+            fetch(`/admin/products/${productId}/status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
-                success: function(response) {
-                    toastr.success('Product status updated successfully');
-                },
-                error: function(xhr) {
-                    toastr.error('Error updating product status');
-                    // Revert the switch
-                    $('.toggle-status[data-id="' + productId + '"]').prop('checked', !isActive);
+                body: JSON.stringify({ is_active: is_active })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
+                return response.json();
+            })
+            .then(data => {
+                if (!data.success) {
+                    throw new Error('Failed to update status');
+                }
+                // Update the UI to reflect the change
+                const statusBadge = row.querySelector('.status-badge');
+                if (statusBadge) {
+                    statusBadge.textContent = data.is_active ? 'Active' : 'Inactive';
+                    statusBadge.className = `status-badge ${data.is_active ? 'active' : 'inactive'}`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                this.checked = !this.checked; // Revert the toggle on error
+                alert('An error occurred while updating status: ' + error.message);
             });
         });
     });
+
+    // Status filter handling
+    const statusFilter = document.getElementById('status-filter');
+    if (statusFilter) {
+        statusFilter.addEventListener('change', function() {
+            const status = this.value;
+            const url = new URL(window.location.href);
+            
+            if (status === 'all') {
+                url.searchParams.delete('status');
+            } else {
+                url.searchParams.set('status', status);
+            }
+            
+            window.location.href = url.toString();
+        });
+    }
+});
 </script>
 @endpush

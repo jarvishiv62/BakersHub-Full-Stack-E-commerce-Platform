@@ -16,7 +16,7 @@ class OccasionSeeder extends Seeder
             [
                 'title' => 'Birthday Celebration',
                 'description' => 'Make their special day unforgettable with our custom birthday cakes and treats!',
-                'image' => 'occasions/birthday.jpg',
+                'image' => 'occasions/o.jpg',
                 'alt_text' => 'Colorful birthday cake with candles',
                 'route' => '/products?occasion=birthday',
                 'is_active' => true,

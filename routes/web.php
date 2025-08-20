@@ -22,10 +22,13 @@ Route::get('/catering', [PageController::class, 'catering'])->name('catering');
 Route::get('/cart', [PageController::class, 'cart'])->name('cart');
 Route::get('/account', [PageController::class, 'account'])->name('account');
 Route::get('/checkout', [PageController::class, 'checkout'])->name('checkout');
+Route::get('/search', [PageController::class, 'search'])->name('search');
 
 // Product Routes
 Route::get('/products', [ProductController::class, 'index'])->name('products');
-Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/products/{product}', [ProductController::class, 'show'])
+    ->name('products.show')
+    ->where('product', '[0-9]+'); // Ensure only numeric IDs are accepted
 
 // Admin Dashboard
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {

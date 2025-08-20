@@ -29,6 +29,10 @@ return new class extends Migration
             $table->index('price');
             $table->index('rating');
         });
+        
+        Schema::table('products', function (Blueprint $table) {
+            $table->boolean('is_active')->default(true)->after('reviews_count');
+        });
     }
 
     /**
@@ -39,5 +43,9 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('products');
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropColumn('is_active');
+        });
     }
+    
 };
