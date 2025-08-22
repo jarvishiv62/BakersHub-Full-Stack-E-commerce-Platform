@@ -47,6 +47,11 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{ route('admin.orders.index') }}" class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+                                <i class="bi bi-cart-check"></i> Orders
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ route('admin.testimonials.index') }}" class="nav-link {{ request()->routeIs('admin.testimonials.*') ? 'active' : '' }}">
                                 <i class="bi bi-chat-square-quote"></i> Testimonials
                             </a>

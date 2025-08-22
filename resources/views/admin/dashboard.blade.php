@@ -50,7 +50,12 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3 mb-3">
-                            <a href="{{ route('admin.occasions.create') }}" class="btn btn-primary w-100">
+                            <a href="{{ route('admin.orders.index') }}" class="btn btn-primary w-100">
+                                <i class="bi bi-cart"></i> View Orders
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ route('admin.occasions.create') }}" class="btn btn-success w-100">
                                 <i class="bi bi-plus-circle"></i> Add New Occasion
                             </a>
                         </div>

@@ -177,18 +177,78 @@
 
 @push('scripts')
 <script>
+    // Add CSRF token to all AJAX requests
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
     // Add to cart functionality
     document.querySelectorAll('.add-to-cart').forEach(button => {
         button.addEventListener('click', function() {
             const productId = this.getAttribute('data-product-id');
-            // Add your cart logic here
-            console.log('Added to cart:', productId);
+            const button = this;
             
-            // Show success message
-            const toast = new bootstrap.Toast(document.getElementById('addedToCartToast'));
-            toast.show();
+            // Disable button to prevent multiple clicks
+            button.disabled = true;
+            button.innerHTML = '<i class="bi bi-cart-plus me-1"></i> Adding...';
+            
+            // Make AJAX request to add to cart
+            fetch('{{ route("cart.add") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: 1
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    const toast = new bootstrap.Toast(document.getElementById('addedToCartToast'));
+                    toast.show();
+                    
+                    // Update cart count in the header
+                    updateCartCount(data.cart_count || 0);
+                } else {
+                    throw new Error(data.message || 'Failed to add item to cart');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Show error message
+                const toastEl = document.getElementById('errorToast');
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            })
+            .finally(() => {
+                // Re-enable button
+                button.disabled = false;
+                button.innerHTML = '<i class="bi bi-cart-plus me-1"></i> Add to Cart';
+            });
         });
     });
+    
+    // Function to update cart count in the header
+    function updateCartCount(count) {
+        const cartCountElements = document.querySelectorAll('.cart-count');
+        cartCountElements.forEach(el => {
+            el.textContent = count;
+            el.style.display = count > 0 ? 'inline-flex' : 'none';
+        });
+    }
 </script>
 @endpush
 
@@ -202,6 +262,18 @@
         <div class="toast-body">
             <i class="bi bi-check-circle-fill text-success me-2"></i>
             Item added to cart successfully!
+        </div>
+    </div>
+    
+    <!-- Error Toast -->
+    <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-danger text-white">
+            <strong class="me-auto">Error</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+            Failed to add item to cart. Please try again.
         </div>
     </div>
 </div>

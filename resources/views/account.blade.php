@@ -3,7 +3,7 @@
 @section('title', 'Account | ' . config('app.name'))
 
 @section('content')
-<div class="container py-5 mt-5">
+<div class="container">
     <!-- Welcome Header -->
     <div class="row mb-4 text-center py-4">
         <div class="col-12">

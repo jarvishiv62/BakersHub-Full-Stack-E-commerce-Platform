@@ -23,6 +23,20 @@ class TestimonialSeeder extends Seeder
                 'quote' => 'Amazing texture, taste and service. Highly recommended!',
                 'rating' => 5,
                 'is_active' => true
+            ],
+            [
+                'name' => 'Shivika Gupta',
+                'role' => 'Special Customer',
+                'quote' => 'Great Services and Products, recommended to all!',
+                'rating' => 5,
+                'is_active' => true
+            ],
+            [
+                'name' => 'Utkarsh Maurya',
+                'role' => 'Designer',
+                'quote' => 'One of the Best Cake designs in town, their custom cakes are delicious!',
+                'rating' => 5,
+                'is_active' => true
             ]
         ];
 

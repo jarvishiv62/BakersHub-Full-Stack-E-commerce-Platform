@@ -29,6 +29,7 @@ class PageController extends Controller
     {
         return view('contact');
     }
+    
     public function about()
     {
         $data = [

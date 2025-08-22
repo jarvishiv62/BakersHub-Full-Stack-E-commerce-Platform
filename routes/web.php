@@ -1,10 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Admin\OrderController;
 
 // Authentication Routes
 Route::get('/login', [PageController::class, 'login'])->name('login');
@@ -36,25 +39,65 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
-    
+
     // Products Management
     // Products Management
     Route::resource('products', \App\Http\Controllers\Admin\ProductController::class)
         ->except(['show']);
-    
+
     // Product Status Toggle (AJAX)
     Route::post('products/{product}/status', [\App\Http\Controllers\Admin\ProductController::class, 'toggleStatus'])
         ->name('products.status');
-    
+
     // Occasions Management
     Route::resource('occasions', \App\Http\Controllers\Admin\OccasionController::class)
         ->except(['show']);
-        
+
     // Testimonials Management
     Route::resource('testimonials', \App\Http\Controllers\Admin\TestimonialController::class)
         ->except(['show']);
-    
+
     // Testimonial Status Toggle (AJAX)
     Route::post('testimonials/{testimonial}/status', [\App\Http\Controllers\Admin\TestimonialController::class, 'updateStatus'])
         ->name('testimonials.status');
+});
+// Cart Routes
+Route::middleware('web')->group(function () {
+    // Cart Routes
+    Route::prefix('cart')->group(function () {
+        Route::post('/add', [CartController::class, 'add'])->name('cart.add');
+        Route::get('/', [CartController::class, 'index'])->name('cart.index');
+        Route::post('/update/{id}', [CartController::class, 'update'])->name('cart.update');
+        Route::delete('/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+        Route::delete('/clear', [CartController::class, 'clear'])->name('cart.clear');
+    });
+
+    // Checkout Routes
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/order/success/{id}', [CheckoutController::class, 'success'])->name('order.success');
+
+    // Admin Dashboard and Routes
+    Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+        // Admin Dashboard
+        Route::get('/dashboard', function () {
+            return view('admin.dashboard');
+        })->name('admin.dashboard');
+
+        // Admin Order Routes
+        Route::get('/orders', [OrderController::class, 'index'])
+            ->name('admin.orders.index');
+
+        Route::get('/orders/{order}', [OrderController::class, 'show'])
+            ->name('admin.orders.show')
+            ->where('order', '[0-9]+');
+
+        Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])
+            ->name('admin.orders.update-status')
+            ->where('order', '[0-9]+');
+
+        // Additional order management routes can be added here
+        // Example: Route::post('/orders/{order}/invoice', [OrderController::class, 'generateInvoice'])
+        //     ->name('admin.orders.invoice');
+    });
 });

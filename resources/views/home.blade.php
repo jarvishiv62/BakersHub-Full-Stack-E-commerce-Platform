@@ -5,7 +5,7 @@
 @section('content')
 
 <!-- pudding-section.blade.php -->
-<section class="pudding-section mt-5" id="puddingSection">
+<section class="pudding-section" id="puddingSection">
     <div class="pudding-card" id="puddingCarousel">
         <!-- Slide 1 -->
         <div class="pudding-slide active" data-bg="{{ asset('images/home/hero1.jpg') }}">
@@ -82,7 +82,7 @@
                         </div>
                         <div class="card-footer bg-transparent border-top-0 text-center">
                             <button class="btn btn-outline-primary w-100 add-to-cart" data-product-id="{{ $product['id'] }}">
-                                <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                                <i class="bi bi-cart-plus me-1"></i> Add to Cart
                             </button>
                         </div>
                     </div>
@@ -227,8 +227,43 @@
 
 @endsection
 
+<!-- Success and Error Toasts -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="addedToCartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-success text-white">
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            <i class="bi bi-check-circle-fill text-success me-2"></i>
+            Item added to cart successfully!
+        </div>
+    </div>
+    
+    <!-- Error Toast -->
+    <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-danger text-white">
+            <strong class="me-auto">Error</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+            Failed to add item to cart. Please try again.
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
+// Function to update cart count in the header
+function updateCartCount(count) {
+    const cartCountElements = document.querySelectorAll('.cart-count');
+    cartCountElements.forEach(el => {
+        el.textContent = count;
+        el.style.display = count > 0 ? 'inline-flex' : 'none';
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const slides = document.querySelectorAll('.pudding-slide');
     const dots = document.querySelectorAll('.dot');
@@ -370,6 +405,63 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize the slider
     initSlider();
+});
+
+// Add to cart functionality for featured products
+document.querySelectorAll('.add-to-cart').forEach(button => {
+    button.addEventListener('click', function() {
+        const productId = this.dataset.productId;
+        const button = this;
+        
+        // Disable button and show loading state
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Adding...';
+        
+        // Send AJAX request to add to cart
+        fetch('{{ route("cart.add") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                quantity: 1
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                const toast = new bootstrap.Toast(document.getElementById('addedToCartToast'));
+                toast.show();
+                
+                // Update cart count in the header
+                updateCartCount(data.cart_count || 0);
+            } else {
+                throw new Error(data.message || 'Failed to add item to cart');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Show error message
+            const toastEl = document.getElementById('errorToast');
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        })
+        .finally(() => {
+            // Re-enable button
+            button.disabled = false;
+            button.innerHTML = '<i class="bi bi-cart-plus me-1"></i> Add to Cart';
+        });
+    });
 });
 </script>
 @endpush

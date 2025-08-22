@@ -28,6 +28,7 @@ class ProductSeeder extends Seeder
             $source = public_path("images/home/pro{$i}.{$ext}");
             $dest = "{$imageDir}/pro{$i}.{$ext}";
             
+            // Ensure the source file exists before trying to copy
             if (file_exists($source) && !file_exists($dest)) {
                 copy($source, $dest);
             }
@@ -37,7 +38,7 @@ class ProductSeeder extends Seeder
                 'name' => 'Chocolate Fudge Cake', 
                 'price' => 249, 
                 'category' => 'Cakes', 
-                'image' => 'storage/images/products/pro1.jpg',
+                'image' => 'images/products/pro1.jpg',
                 'description' => 'Rich and moist chocolate cake with layers of fudge frosting',
                 'rating' => 4.5,
                 'reviews_count' => 128
@@ -46,7 +47,7 @@ class ProductSeeder extends Seeder
                 'name' => 'Sourdough Bread', 
                 'price' => 99, 
                 'category' => 'Bread', 
-                'image' => 'storage/images/products/pro2.webp',
+                'image' => 'images/products/pro2.webp',
                 'description' => 'Artisanal sourdough bread with perfect crust and airy interior',
                 'rating' => 4.8,
                 'reviews_count' => 215
@@ -55,7 +56,7 @@ class ProductSeeder extends Seeder
                 'name' => 'Croissant', 
                 'price' => 350, 
                 'category' => 'Pastries', 
-                'image' => 'storage/images/products/pro3.jpeg',
+                'image' => 'images/products/pro3.jpeg',
                 'description' => 'Buttery, flaky croissant with a perfect golden crust',
                 'rating' => 4.7,
                 'reviews_count' => 189
@@ -64,7 +65,7 @@ class ProductSeeder extends Seeder
                 'name' => 'Chocolate Chip Cookies', 
                 'price' => 199, 
                 'category' => 'Cookies', 
-                'image' => 'storage/images/products/pro4.jpg',
+                'image' => 'images/products/pro4.jpg',
                 'description' => 'Classic cookies loaded with premium chocolate chips',
                 'rating' => 4.9,
                 'reviews_count' => 342
@@ -73,7 +74,7 @@ class ProductSeeder extends Seeder
                 'name' => 'Red Velvet Cupcake', 
                 'price' => 325, 
                 'category' => 'Desserts', 
-                'image' => 'storage/images/products/pro5.webp',
+                'image' => 'images/products/pro5.webp',
                 'description' => 'Moist red velvet cupcake with cream cheese frosting',
                 'rating' => 4.6,
                 'reviews_count' => 156
@@ -82,7 +83,7 @@ class ProductSeeder extends Seeder
                 'name' => 'Baguette', 
                 'price' => 299, 
                 'category' => 'Bread', 
-                'image' => 'storage/images/products/pro6.jpeg',
+                'image' => 'images/products/pro6.jpeg',
                 'description' => 'Traditional French baguette with crispy crust and soft interior',
                 'rating' => 4.5,
                 'reviews_count' => 201

@@ -3060,3 +3060,20 @@ body > * {
     width: 80%;
 }
 
+    .order-status-select {
+        cursor: pointer;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        border: 1px solid #dee2e6;
+        background-color: white;
+    }
+    .order-actions .btn {
+        padding: 0.25rem 0.5rem;
+    }
+    #orders-table tbody tr {
+        cursor: pointer;
+    }
+    #orders-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+

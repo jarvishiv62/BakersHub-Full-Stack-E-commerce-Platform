@@ -12,11 +12,36 @@ class OccasionSeeder extends Seeder
      */
     public function run(): void
     {
+        // Create the directory if it doesn't exist
+        $imageDir = storage_path('app/public/images/occasions');
+        if (!file_exists($imageDir)) {
+            mkdir($imageDir, 0755, true);
+        }
+        
+        // Copy sample images from public/images/home to storage/app/public/images/occasions
+        $imageMap = [
+            'cake5.webp' => 'cake5.webp',
+            'ocake4.jpg' => 'ocake4.jpg',
+            'ocake1.jpg' => 'ocake1.jpg',
+            'cake3.webp' => 'cake3.webp',
+            'cake1.webp' => 'cake1.webp',
+            'ocake2.webp' => 'ocake2.webp'
+        ];
+        
+        foreach ($imageMap as $destFile => $sourceFile) {
+            $source = public_path("images/home/{$sourceFile}");
+            $dest = "{$imageDir}/{$destFile}";
+            
+            if (file_exists($source) && !file_exists($dest)) {
+                copy($source, $dest);
+            }
+        }
+        
         $occasions = [
             [
                 'title' => 'Birthday Celebration',
                 'description' => 'Make their special day unforgettable with our custom birthday cakes and treats!',
-                'image' => 'occasions/o.jpg',
+                'image' => 'images/occasions/cake5.webp',
                 'alt_text' => 'Colorful birthday cake with candles',
                 'route' => '/products?occasion=birthday',
                 'is_active' => true,
@@ -25,7 +50,7 @@ class OccasionSeeder extends Seeder
             [
                 'title' => 'Anniversary',
                 'description' => 'Celebrate your love with our specially designed anniversary cakes and desserts.',
-                'image' => 'occasions/anniversary.jpg',
+                'image' => 'images/occasions/ocake4.jpg',
                 'alt_text' => 'Elegant anniversary cake',
                 'route' => '/products?occasion=anniversary',
                 'is_active' => true,
@@ -34,7 +59,7 @@ class OccasionSeeder extends Seeder
             [
                 'title' => 'Wedding',
                 'description' => 'Make your wedding day even more special with our exquisite wedding cakes.',
-                'image' => 'occasions/wedding.jpg',
+                'image' => 'images/occasions/ocake1.jpg',
                 'alt_text' => 'Beautiful wedding cake',
                 'route' => '/products?occasion=wedding',
                 'is_active' => true,
@@ -43,7 +68,7 @@ class OccasionSeeder extends Seeder
             [
                 'title' => 'Graduation',
                 'description' => 'Celebrate academic achievements with our graduation-themed treats!',
-                'image' => 'occasions/graduation.jpg',
+                'image' => 'images/occasions/cake3.webp',
                 'alt_text' => 'Graduation cap cake',
                 'route' => '/products?occasion=graduation',
                 'is_active' => true,
@@ -52,7 +77,7 @@ class OccasionSeeder extends Seeder
             [
                 'title' => 'Baby Shower',
                 'description' => 'Sweet treats to celebrate the upcoming arrival of your little one.',
-                'image' => 'occasions/baby-shower.jpg',
+                'image' => 'images/occasions/cake1.webp',
                 'alt_text' => 'Baby shower cupcakes',
                 'route' => '/products?occasion=baby-shower',
                 'is_active' => true,
@@ -61,7 +86,7 @@ class OccasionSeeder extends Seeder
             [
                 'title' => 'Corporate Events',
                 'description' => 'Impress your clients and colleagues with our professional catering options.',
-                'image' => 'occasions/corporate.jpg',
+                'image' => 'images/occasions/ocake2.webp',
                 'alt_text' => 'Elegant corporate dessert table',
                 'route' => '/products?occasion=corporate',
                 'is_active' => true,
