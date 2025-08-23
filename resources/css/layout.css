@@ -1,0 +1,331 @@
+/* ======================
+   Layout & Grid
+   ====================== */
+.container {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 1320px;
+}
+
+.section {
+    padding: 5rem 0;
+    position: relative;
+}
+
+.section-header,
+.section-title {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: var(--color-primary);
+    margin: 1rem auto 0;
+}
+
+/* ======================
+   Header & Navigation
+   ====================== */
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
+    background: var(--color-surface);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+    transition: var(--transition-base);
+}
+
+.navbar {
+    padding: 0.5rem 0;
+    min-height: 80px;
+    transition: var(--transition-base);
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1.5rem;
+    line-height: 1;
+}
+
+.navbar-brand img {
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 2px;
+}
+
+.navbar-brand small {
+    font-size: 0.7rem;
+    line-height: 1.2;
+}
+
+.main-logo {
+    height: 10px;
+    width: auto;
+    transition: var(--transition-base);
+}
+
+.navbar-nav {
+    align-items: center;
+}
+
+.navbar-nav .nav-link {
+    color: var(--color-neutral-900) !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    padding: 0.5rem 0.8rem !important;
+    margin: 0 0.2rem;
+    position: relative;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link:focus {
+    color: var(--color-secondary) !important;
+    text-decoration: none;
+}
+
+.navbar-nav .nav-item.active .nav-link,
+.navbar-nav .nav-link.active {
+    color: var(--color-secondary) !important;
+}
+
+/* ======================
+   Footer
+   ====================== */
+.footer {
+    background: var(--color-neutral-900);
+    color: var(--color-surface);
+    padding: 4rem 0 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-secondary), var(--color-primary));
+}
+
+.footer-content {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 3rem;
+}
+
+.footer-about {
+    padding-right: 2rem;
+}
+
+.footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--color-surface);
+    text-decoration: none;
+}
+
+.footer-about p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 1.5rem;
+}
+
+.footer-links h3,
+.footer-contact h3 {
+    color: var(--color-surface);
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.footer-links h3::after,
+.footer-contact h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: var(--color-secondary);
+}
+
+.footer-links ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-links li {
+    margin-bottom: 0.8rem;
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: var(--transition-base);
+    display: inline-block;
+    padding: 0.25rem 0;
+}
+
+.footer-links a:hover {
+    color: var(--color-secondary);
+    transform: translateX(5px);
+}
+
+.footer-bottom {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 1.5rem 0;
+    margin-top: 3rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer-bottom a {
+    color: var(--color-secondary);
+    text-decoration: none;
+    transition: var(--transition-base);
+    font-weight: 500;
+}
+
+.footer-bottom a:hover {
+    color: var(--color-surface);
+    text-decoration: underline;
+}
+
+/* ======================
+   Responsive Layout
+   ====================== */
+/* Desktop Navigation */
+@media (min-width: 992px) {
+    .nav-collapse {
+        display: block !important;
+    }
+    
+    .navbar-toggler {
+        display: none;
+    }
+}
+
+/* Mobile Navigation */
+@media (max-width: 991.98px) {
+    .nav-collapse {
+        position: fixed;
+        top: 80px;
+        left: 0;
+        right: 0;
+        background: var(--color-surface);
+        padding: var(--spacing-sm);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        max-height: calc(100vh - 80px);
+        overflow-y: auto;
+        z-index: 999;
+    }
+    
+    .nav-list {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .nav-item {
+        width: 100%;
+        margin: 0;
+        border-bottom: 1px solid var(--color-border);
+    }
+    
+    .nav-link {
+        padding: 1rem 0 !important;
+        justify-content: space-between;
+        width: 100%;
+    }
+    
+    .navbar-nav .nav-link {
+        padding: 0.75rem 1.25rem !important;
+    }
+    
+    .navbar {
+        padding: 0.75rem 0;
+    }
+    
+    .main-logo {
+        height: 35px;
+    }
+    
+    .navbar-collapse {
+        background: var(--color-surface);
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .nav-link::after {
+        display: none;
+    }
+    
+    /* Footer adjustments */
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem 1.5rem;
+    }
+    
+    .footer-about {
+        grid-column: 1 / -1;
+        padding-right: 0;
+    }
+}
+
+/* Small devices */
+@media (max-width: 767.98px) {
+    .section {
+        padding: 3rem 0;
+    }
+    
+    .section-header,
+    .section-title {
+        margin-bottom: 2rem;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 575.98px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .footer-links,
+    .footer-contact {
+        margin-bottom: 1.5rem;
+    }
+}

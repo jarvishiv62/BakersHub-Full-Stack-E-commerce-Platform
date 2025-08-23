@@ -45,39 +45,48 @@
 <!-- Products Section -->
 <section class="products-section pt-5">
     <div class="container products-container text-center">
-        <div class="section-title">
-            <h1>Our Fresh Bakes</h1>
-            <p>Handcrafted with love and the finest ingredients, each bite is a celebration of flavor and tradition.</p>
+        <div class="section-title mb-4">
+            @if($selectedCategory)
+                <h1>{{ $selectedCategory }}</h1>
+                <p>Showing all {{ strtolower($selectedCategory) }} products. <a href="{{ route('products') }}" class="text-decoration-none">View all products</a></p>
+            @else
+                <h1>Our Fresh Bakes</h1>
+                <p>Handcrafted with love and the finest ingredients, each bite is a celebration of flavor and tradition.</p>
+            @endif
         </div>
 
         <!-- Product Filters -->
-        <form action="{{ route('products') }}" method="GET">
+        <form action="{{ route('products') }}" method="GET" id="productFilterForm">
             <div class="row mb-4">
                 <div class="col-md-3 mb-3">
-                    <select name="category" class="form-select" onchange="this.form.submit()">
+                    <select class="form-select" name="category" id="category">
                         <option value="">All Categories</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category }}" {{ $selectedCategory === $category ? 'selected' : '' }}>
+                        @foreach($categories as $slug => $category)
+                            <option value="{{ $slug }}" {{ $categorySlug === $slug ? 'selected' : '' }}>
                                 {{ $category }}
                             </option>
                         @endforeach
                     </select>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <select name="sort" class="form-select" onchange="this.form.submit()">
+                    <select name="sort" class="form-select" onchange="document.getElementById('productFilterForm').submit()">
                         <option value="">Sort By</option>
-                        <option value="price_asc" {{ $selectedSort === 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
-                        <option value="price_desc" {{ $selectedSort === 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
+                        <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
+                        <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
                     </select>
                 </div>
                 <div class="col-md-6">
                     <div class="input-group">
-                        <input type="text" name="search" class="form-control" placeholder="Search products..." 
-                               value="{{ $searchQuery ?? '' }}">
-                        <button class="btn btn-outline-secondary" type="submit">
+                        <input type="text" 
+                               name="search" 
+                               class="form-control" 
+                               placeholder="Search products by name or description..." 
+                               value="{{ request('search', '') }}"
+                               aria-label="Search products">
+                        <button class="btn btn-outline-primary" type="submit">
                             <i class="bi bi-search"></i> Search
                         </button>
-                        @if($searchQuery || $selectedCategory || $selectedSort)
+                        @if(request()->hasAny(['search', 'category', 'sort']))
                             <a href="{{ route('products') }}" class="btn btn-outline-danger ms-2">
                                 <i class="bi bi-x-lg"></i> Clear
                             </a>
@@ -85,6 +94,20 @@
                     </div>
                 </div>
             </div>
+            @if(request()->hasAny(['search', 'category', 'sort']))
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    @if(request('search'))
+                        <span class="me-2">Search: <strong>{{ request('search') }}</strong></span>
+                    @endif
+                    @if(request('category'))
+                        <span class="me-2">Category: <strong>{{ request('category') }}</strong></span>
+                    @endif
+                    @if(request('sort'))
+                        <span>Sort: <strong>{{ request('sort') === 'price_asc' ? 'Price: Low to High' : 'Price: High to Low' }}</strong></span>
+                    @endif
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
         </form>
 
         @if(count($products) > 0)

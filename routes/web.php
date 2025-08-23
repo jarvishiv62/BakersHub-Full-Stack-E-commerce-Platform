@@ -8,6 +8,8 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\AboutController;
+
 
 // Authentication Routes
 Route::get('/login', [PageController::class, 'login'])->name('login');
@@ -19,13 +21,13 @@ Route::get('/reset-password/{token}', [PageController::class, 'resetPassword'])-
 
 // Frontend Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/about', [PageController::class, 'about'])->name('about');
+Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::get('/catering', [PageController::class, 'catering'])->name('catering');
 Route::get('/cart', [PageController::class, 'cart'])->name('cart');
 Route::get('/account', [PageController::class, 'account'])->name('account');
 Route::get('/checkout', [PageController::class, 'checkout'])->name('checkout');
-Route::get('/search', [PageController::class, 'search'])->name('search');
+// Search is handled by ProductController@index
 
 // Product Routes
 Route::get('/products', [ProductController::class, 'index'])->name('products');

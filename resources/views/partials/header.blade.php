@@ -1,4 +1,4 @@
-<header class="site-header sticky-top bg-white shadow-sm">
+<header class="site-header bg-white shadow-sm">
     <!-- Main Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
         <div class="container">
@@ -10,8 +10,8 @@
 
             <!-- Left Section - Logo -->
             <a class="navbar-brand mx-lg-0 mx-auto order-lg-1" href="{{ url('/') }}">
-                <img src="{{ $settings['logo'] }}" alt="Wish-Bakery" height="50">
-                <small class="d-block text-center text-muted fst-italic">EST. 1996</small>
+                <img src="{{ $settings['logo'] }}" alt="Wish-Bakery" class="main-logo">
+                <small class="d-block text-center text-muted fst-italic">EST. 2021</small>
             </a>
 
             <!-- Center Section - Navigation -->
@@ -190,16 +190,16 @@
 
 <!-- Search Modal -->
 <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content border-0 shadow">
             <div class="modal-header border-0 pb-0">
                 <h5 class="modal-title fs-4 fw-bold text-primary" id="searchModalLabel">Search Products</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body py-4">
-                <form action="{{ route('search') }}" method="GET" class="search-form">
+                <form action="{{ route('products') }}" method="GET" class="search-form">
                     <div class="input-group input-group-lg">
-                        <input type="text" class="form-control form-control-lg border-end-0 py-3 px-4" name="q"
+                        <input type="text" class="form-control form-control-lg border-end-0 py-3 px-4" name="search"
                             placeholder="What are you looking for?" aria-label="Search products" required>
                         <button class="btn btn-primary px-4" type="submit">
                             <i class="fas fa-search me-2"></i> Search

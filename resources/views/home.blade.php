@@ -57,43 +57,29 @@
     </div>
 </section>
 
-    <!-- Products Section -->
-    <section class="home-section products-bg text-center py-5">
+    <!-- Categories Section -->
+    <section class="categories-section py-5 bg-light">
         <div class="container">
-            <div class="section-title">
-                <h2>Our Products</h2>
-                <p>Handcrafted with love and the finest ingredients, each bite is a celebration of flavor and tradition.</p>
+            <div class="section-header text-center mb-5">
+                <h2 class="display-5 fw-bold">Our Categories</h2>
+                <p class="lead text-muted">Explore our delicious range of bakery items</p>
             </div>
-            
             <div class="row g-4">
-                @foreach($featuredProducts as $product)
-                <div class="col-lg-3 col-md-6">
-                    <div class="card product-card h-100 border-0 shadow-sm">
-                        <div class="position-relative">
-                            <img src="{{ asset($product['image']) }}" class="card-img-top" alt="{{ $product['name'] }}">
-                            <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2">{{ $product['category'] }}</span>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="card-title mb-0">{{ $product['name'] }}</h5>
-                                <span class="text-dark fw-bold">₹{{ number_format($product['price'], 2) }}</span>
+                @foreach($categories as $category)
+                <div class="col-md-4 col-lg-3">
+                    <a href="{{ route('products', ['category' => $category['slug']]) }}" class="text-decoration-none">
+                        <div class="category-card card h-100 border-0 shadow-sm hover-shadow transition-all">
+                            <div class="card-img-top overflow-hidden" style="height: 180px;">
+                                <img src="{{ $category['image'] }}" class="img-fluid w-100 h-100 object-fit-cover" alt="{{ $category['name'] }}">
                             </div>
-                            <p class="card-text text-muted small">{{ $product['description'] }}</p>
+                            <div class="card-body text-center">
+                                <h3 class="h5 mb-0">{{ $category['name'] }}</h3>
+                                <span class="text-muted small">View all</span>
+                            </div>
                         </div>
-                        <div class="card-footer bg-transparent border-top-0 text-center">
-                            <button class="btn btn-outline-primary w-100 add-to-cart" data-product-id="{{ $product['id'] }}">
-                                <i class="bi bi-cart-plus me-1"></i> Add to Cart
-                            </button>
-                        </div>
-                    </div>
+                    </a>
                 </div>
                 @endforeach
-            </div>
-            
-            <div class="text-center mt-5">
-                <a href="{{ route('products') }}" class="btn btn-view-all">
-                    View All Products <i class="bi bi-arrow-right ms-2"></i>
-                </a>
             </div>
         </div>
     </section>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Occasion;
 use App\Models\Testimonial;
+use App\Models\Product;
 
 class HomeController extends Controller
 {
@@ -22,41 +23,22 @@ class HomeController extends Controller
                     'route' => $occasion->route
                 ];
             });
-
-        $featuredProducts = [
-            [
-                'id' => 1, 
-                'name' => 'Vanilla Cake', 
-                'price' => 1299, 
-                'image' => 'images/home/cake1.webp',
-                'description' => 'Classic vanilla sponge layered with creamy frosting',
-                'category' => 'Cakes'
-            ],
-            [
-                'id' => 2, 
-                'name' => 'Chocolate Fudge', 
-                'price' => 1499, 
-                'image' => 'images/home/cake2.webp',
-                'description' => 'Rich chocolate cake with decadent fudge icing',
-                'category' => 'Cakes'
-            ],
-            [
-                'id' => 3, 
-                'name' => 'Pastry', 
-                'price' => 99, 
-                'image' => 'images/home/cake3.webp',
-                'description' => 'Flaky, buttery pastries baked fresh',
-                'category' => 'Pastries'
-            ],
-            [
-                'id' => 4, 
-                'name' => 'Assorted Cake', 
-                'price' => 299, 
-                'image' => 'images/home/cake4.webp',
-                'description' => 'Delightful mix of chocolate chip and more',
-                'category' => 'Cakes'
-            ]
-        ];
+            
+        // Get unique product categories with an example product image
+        $categories = Product::select('category')
+            ->distinct()
+            ->get()
+            ->map(function($category) {
+                $product = Product::where('category', $category->category)
+                    ->whereNotNull('image')
+                    ->first();
+                    
+                return [
+                    'name' => $category->category,
+                    'slug' => strtolower(str_replace(' ', '-', $category->category)),
+                    'image' => $product ? asset('storage/' . $product->image) : asset('images/placeholder.jpg')
+                ];
+            });
 
         // Get all active testimonials, ordered by most recent first
         $testimonials = Testimonial::where('is_active', true)
@@ -87,11 +69,11 @@ class HomeController extends Controller
             ]
         ];
 
-        return view('home', compact(
-            'featuredProducts',
-            'occasions',
-            'testimonials',
-            'deliveryOptions'
-        ));
+        return view('home', [
+            'occasions' => $occasions,
+            'testimonials' => $testimonials,
+            'categories' => $categories,
+            'deliveryOptions' => $deliveryOptions
+        ]);
     }
 }

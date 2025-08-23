@@ -14,9 +14,24 @@ class ProductController extends Controller
     {
         $query = Product::query();
 
+        // Get all categories with their slugs for the filter
+        $allCategories = Product::select('category')
+            ->distinct()
+            ->orderBy('category')
+            ->get()
+            ->mapWithKeys(function($item) {
+                $slug = strtolower(str_replace(' ', '-', $item->category));
+                return [$slug => $item->category];
+            });
+
         // Filter by category if specified
-        if ($request->has('category')) {
-            $query->where('category', $request->category);
+        $selectedCategory = null;
+        if ($categorySlug = $request->input('category')) {
+            // Find the actual category name from the slug
+            $selectedCategory = $allCategories->get($categorySlug);
+            if ($selectedCategory) {
+                $query->where('category', $selectedCategory);
+            }
         }
 
         // Search functionality
@@ -27,26 +42,33 @@ class ProductController extends Controller
             });
         }
 
+        // Filter out inactive products
+        $query->where('is_active', true);
+
         // Sorting
-        if ($sort = $request->input('sort')) {
-            if ($sort === 'price_asc') {
-                $query->orderBy('price');
-            } elseif ($sort === 'price_desc') {
-                $query->orderByDesc('price');
-            }
+        $sort = $request->input('sort');
+        if ($sort === 'price_asc') {
+            $query->orderBy('price');
+        } elseif ($sort === 'price_desc') {
+            $query->orderByDesc('price');
         } else {
             $query->latest();
         }
 
-        $products = $query->paginate(12);
-        $categories = Product::select('category')->distinct()->pluck('category');
+        $products = $query->paginate(12)
+            ->appends([
+                'search' => $request->search,
+                'category' => $request->category,
+                'sort' => $request->sort
+            ]);
 
         return view('products', [
             'products' => $products,
-            'categories' => $categories,
-            'selectedCategory' => $request->category,
-            'selectedSort' => $request->sort,
-            'searchQuery' => $request->search
+            'categories' => $allCategories,
+            'selectedCategory' => $selectedCategory,
+            'selectedSort' => $sort,
+            'searchQuery' => $request->search,
+            'categorySlug' => $request->category
         ]);
     }
 
