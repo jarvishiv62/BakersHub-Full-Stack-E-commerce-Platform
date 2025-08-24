@@ -1,6 +1,59 @@
 @extends('layouts.app')
 
 @section('content')
+@push('scripts')
+<script>
+function handleCheckout(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const spinner = submitBtn.querySelector('.spinner-border');
+    
+    // Show loading state
+    submitBtn.disabled = true;
+    spinner.classList.remove('d-none');
+    
+    // Submit form data
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            customer_name: form.customer_name.value,
+            customer_phone: form.customer_phone.value,
+            address: form.address.value,
+            notes: form.notes?.value || ''
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => { throw err; });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.redirect) {
+            window.location.href = data.redirect;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert(error.message || 'An error occurred. Please try again.');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        spinner.classList.add('d-none');
+    });
+    
+    return false;
+}
+</script>
+@endpush
 <div class="container mt-5 py-5">
     <div class="row">
         <div class="col-md-8">
@@ -11,7 +64,7 @@
                     <h4>Customer Information</h4>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('checkout.index') }}" method="POST" id="checkout-form">
+                    <form action="{{ route('checkout.store') }}" method="POST" id="checkout-form" onsubmit="return handleCheckout(event)">
                         @csrf
                         
                         <div class="mb-3">

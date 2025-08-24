@@ -11,7 +11,6 @@
             <!-- Left Section - Logo -->
             <a class="navbar-brand mx-lg-0 mx-auto order-lg-1" href="{{ url('/') }}">
                 <img src="{{ $settings['logo'] }}" alt="Wish-Bakery" class="main-logo">
-                <small class="d-block text-center text-muted fst-italic">EST. 2021</small>
             </a>
 
             <!-- Center Section - Navigation -->

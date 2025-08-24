@@ -1,6 +1,28 @@
 /* ======================
    Layout & Grid
    ====================== */
+/* Logo Styling - Consolidated */
+.main-logo {
+    width: auto;
+    transition: var(--transition-base, all 0.3s ease);
+}
+
+.navbar-brand .main-logo {
+    height: 50px;
+}
+
+@media (min-width: 768px) {
+    .navbar-brand .main-logo {
+        height: 60px;
+    }
+}
+
+@media (min-width: 992px) {
+    .navbar-brand .main-logo {
+        height: 70px;
+    }
+}
+
 .container {
     width: 100%;
     padding-right: 15px;
@@ -74,13 +96,6 @@
     font-size: 0.7rem;
     line-height: 1.2;
 }
-
-.main-logo {
-    height: 10px;
-    width: auto;
-    transition: var(--transition-base);
-}
-
 .navbar-nav {
     align-items: center;
 }
@@ -277,7 +292,7 @@
     }
     
     .main-logo {
-        height: 35px;
+        height: 35px;  /* Specific mobile override */
     }
     
     .navbar-collapse {

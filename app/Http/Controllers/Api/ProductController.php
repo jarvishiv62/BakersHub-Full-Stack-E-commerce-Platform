@@ -8,7 +8,7 @@ class ProductController extends Controller
 {
 public function index()
 {
-return response()->json(Product::all());
+    return response()->json(Product::withTrashed()->get());
 }
 
 public function store(Request $request)
@@ -25,19 +25,27 @@ return response()->json($product, 201);
 
 public function show($id)
 {
-return response()->json(Product::findOrFail($id));
+    $product = Product::withTrashed()->findOrFail($id);
+    return response()->json($product);
 }
 
 public function update(Request $request, $id)
 {
-$product = Product::findOrFail($id);
-$product->update($request->all());
-return response()->json($product);
+    $product = Product::withTrashed()->findOrFail($id);
+    $product->update($request->all());
+    return response()->json($product);
 }
 
 public function destroy($id)
 {
-Product::findOrFail($id)->delete();
-return response()->json(null, 204);
+    $product = Product::withTrashed()->findOrFail($id);
+    
+    if ($product->trashed()) {
+        $product->forceDelete();
+    } else {
+        $product->delete();
+    }
+    
+    return response()->json(null, 204);
 }
 }

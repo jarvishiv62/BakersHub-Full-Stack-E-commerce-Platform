@@ -3,7 +3,6 @@
 @section('title', 'Orders Management')
 
 @section('content')
-<div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3">Order Management</h1>
     </div>
@@ -22,9 +21,9 @@
                         <option value="cancelled">Cancelled</option>
                     </select>
                 </div>
-                <input type="text" class="form-control form-control-sm" id="searchInput" placeholder="Search orders...">
             </div>
         </div>
+
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered table-hover" id="ordersTable" width="100%" cellspacing="0">
@@ -46,59 +45,53 @@
                                 <td>{{ $order->created_at->format('M d, Y h:i A') }}</td>
                                 <td>
                                     <span class="badge 
-                                        {{ $order->status === 'pending' ? 'bg-warning' : '' }}
-                                        {{ $order->status === 'processing' ? 'bg-info' : '' }}
-                                        {{ $order->status === 'shipped' ? 'bg-primary' : '' }}
-                                        {{ $order->status === 'delivered' ? 'bg-success' : '' }}
-                                        {{ $order->status === 'cancelled' ? 'bg-danger' : '' }}">
+                                                {{ $order->status === 'pending' ? 'bg-warning' : '' }}
+                                                {{ $order->status === 'processing' ? 'bg-info' : '' }}
+                                                {{ $order->status === 'shipped' ? 'bg-primary' : '' }}
+                                                {{ $order->status === 'delivered' ? 'bg-success' : '' }}
+                                                {{ $order->status === 'cancelled' ? 'bg-danger' : '' }}
+                                                status-badge" data-status="{{ $order->status }}"
+                                        data-order-id="{{ $order->id }}">
                                         {{ ucfirst($order->status) }}
                                     </span>
                                 </td>
                                 <td>₹{{ number_format($order->total, 2) }}</td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('admin.orders.show', $order->id) }}" 
-                                           class="btn btn-primary" 
-                                           title="View Order">
+                                        <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-primary"
+                                            title="View Order">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <button type="button" 
-                                                class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" 
-                                                data-bs-toggle="dropdown" 
-                                                aria-expanded="false">
+                                        <button type="button"
+                                            class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
                                             <span class="visually-hidden">Toggle Dropdown</span>
                                         </button>
                                         <ul class="dropdown-menu">
                                             <li>
-                                                <a class="dropdown-item status-update" 
-                                                   href="#" 
-                                                   data-status="processing" 
-                                                   data-id="{{ $order->id }}">
+                                                <a class="dropdown-item status-update" href="#" data-status="processing"
+                                                    data-id="{{ $order->id }}">
                                                     Mark as Processing
                                                 </a>
                                             </li>
                                             <li>
-                                                <a class="dropdown-item status-update" 
-                                                   href="#" 
-                                                   data-status="shipped" 
-                                                   data-id="{{ $order->id }}">
+                                                <a class="dropdown-item status-update" href="#" data-status="shipped"
+                                                    data-id="{{ $order->id }}">
                                                     Mark as Shipped
                                                 </a>
                                             </li>
-                                            <li><hr class="dropdown-divider"></li>
                                             <li>
-                                                <a class="dropdown-item text-success status-update" 
-                                                   href="#" 
-                                                   data-status="delivered" 
-                                                   data-id="{{ $order->id }}">
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-success status-update" href="#"
+                                                    data-status="delivered" data-id="{{ $order->id }}">
                                                     <i class="bi bi-check-circle me-1"></i> Mark as Delivered
                                                 </a>
                                             </li>
                                             <li>
-                                                <a class="dropdown-item text-danger status-update" 
-                                                   href="#" 
-                                                   data-status="cancelled" 
-                                                   data-id="{{ $order->id }}">
+                                                <a class="dropdown-item text-danger status-update" href="#"
+                                                    data-status="cancelled" data-id="{{ $order->id }}">
                                                     <i class="bi bi-x-circle me-1"></i> Cancel Order
                                                 </a>
                                             </li>
@@ -117,7 +110,7 @@
                     </tbody>
                 </table>
             </div>
-            
+
             @if($orders->hasPages())
                 <div class="d-flex justify-content-center mt-4">
                     {{ $orders->links() }}
@@ -125,17 +118,8 @@
             @endif
         </div>
     </div>
-</div>
 
-@push('scripts')
-<script>
-    $(document).ready(function() {
-        $('#orders-table').DataTable({
-            "order": [[0, "desc"]],
-            "pageLength": 25,
-            "responsive": true
-        });
-    });
-</script>
-@endpush
+    @push('scripts')
+        <script src="{{ asset('js/admin-orders.js') }}"></script>
+    @endpush
 @endsection

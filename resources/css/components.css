@@ -202,28 +202,9 @@
 }
 
 /* ======================
-   Gift Cards
+   Gift Cards (Base Styles)
+   Note: Main gift card styles are in home.css
    ====================== */
-.gift-card {
-    height: 300px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden;
-    border-radius: 1rem !important;
-}
-
-.gift-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important;
-}
-
-.gift-card img {
-    transition: transform 0.5s ease;
-}
-
-.gift-card:hover img {
-    transform: scale(1.05);
-}
-
 .gift-card-badge {
     position: absolute;
     top: 1rem;
@@ -232,7 +213,6 @@
     color: white;
     padding: 0.25rem 0.75rem;
     border-radius: 20px;
-    font-size: 0.8rem;
     font-weight: 600;
     z-index: 1;
 }

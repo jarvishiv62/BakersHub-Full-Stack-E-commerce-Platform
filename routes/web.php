@@ -26,7 +26,6 @@ Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::get('/catering', [PageController::class, 'catering'])->name('catering');
 Route::get('/cart', [PageController::class, 'cart'])->name('cart');
 Route::get('/account', [PageController::class, 'account'])->name('account');
-Route::get('/checkout', [PageController::class, 'checkout'])->name('checkout');
 // Search is handled by ProductController@index
 
 // Product Routes
@@ -78,28 +77,23 @@ Route::middleware('web')->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/order/success/{id}', [CheckoutController::class, 'success'])->name('order.success');
+});
 
-    // Admin Dashboard and Routes
-    Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
-        // Admin Dashboard
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('admin.dashboard');
+// Admin routes with auth and admin middleware
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+    // Admin Order Routes
+    Route::get('/orders', [OrderController::class, 'index'])
+        ->name('admin.orders.index');
 
-        // Admin Order Routes
-        Route::get('/orders', [OrderController::class, 'index'])
-            ->name('admin.orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])
+        ->name('admin.orders.show')
+        ->where('order', '[0-9]+');
 
-        Route::get('/orders/{order}', [OrderController::class, 'show'])
-            ->name('admin.orders.show')
-            ->where('order', '[0-9]+');
+    Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])
+        ->name('admin.orders.update-status')
+        ->where('order', '[0-9]+');
 
-        Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])
-            ->name('admin.orders.update-status')
-            ->where('order', '[0-9]+');
-
-        // Additional order management routes can be added here
+    // Additional order management routes can be added here
         // Example: Route::post('/orders/{order}/invoice', [OrderController::class, 'generateInvoice'])
         //     ->name('admin.orders.invoice');
     });
-});

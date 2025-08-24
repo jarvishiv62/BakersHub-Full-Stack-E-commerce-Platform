@@ -34,7 +34,15 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1'
         ]);
         
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::withTrashed()->findOrFail($request->product_id);
+        
+        // Check if product is soft deleted
+        if ($product->trashed()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This product is no longer available.'
+            ], 400);
+        }
         $cart = Session::get('cart', ['items' => [], 'total' => 0]);
         $quantity = (int)$request->quantity;
         

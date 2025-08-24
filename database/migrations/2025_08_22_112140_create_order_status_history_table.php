@@ -15,6 +15,11 @@ return new class extends Migration
     {
         Schema::create('order_status_history', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('order_id')->constrained()->onDelete('cascade');
+            $table->string('previous_status')->nullable();
+            $table->string('new_status');
+            $table->text('notes')->nullable();
+            $table->foreignId('changed_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
     }

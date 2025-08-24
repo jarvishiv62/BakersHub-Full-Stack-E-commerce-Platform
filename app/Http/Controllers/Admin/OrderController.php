@@ -86,61 +86,37 @@ class OrderController extends Controller
             'notes' => 'nullable|string|max:1000'
         ]);
         
-        // Check if status is actually changing
-        if ($order->status === $validated['status']) {
-            return $this->jsonOrRedirect(
-                $request,
-                false,
-                'Order status is already set to ' . ucfirst($validated['status']),
-                200
-            );
-        }
-        
-        DB::beginTransaction();
-        
         try {
-            $previousStatus = $order->status;
-            $newStatus = $validated['status'];
+            $success = $order->updateStatus(
+                $validated['status'],
+                $validated['notes'] ?? null,
+                auth()->id()
+            );
             
-            // Update order status
-            $order->status = $newStatus;
-            
-            // Set timestamps based on status
-            if ($newStatus === 'delivered' && $previousStatus !== 'delivered') {
-                $order->delivered_at = now();
-            } elseif ($newStatus === 'cancelled') {
-                $order->cancelled_at = now();
+            if (!$success) {
+                return $this->jsonOrRedirect(
+                    $request,
+                    false,
+                    'Order status is already set to ' . ucfirst($validated['status']),
+                    200
+                );
             }
             
-            // Add status history
-            $order->statusHistory()->create([
-                'status' => $newStatus,
-                'notes' => $validated['notes'] ?? null,
-                'updated_by' => auth()->id()
-            ]);
-            
-            $order->save();
-            
-            // Trigger events or notifications
-            $this->handleOrderStatusUpdate($order, $previousStatus, $newStatus);
-            
-            DB::commit();
+            // Handle any additional logic based on status change
+            $this->handleOrderStatusUpdate($order, $order->status, $validated['status']);
             
             return $this->jsonOrRedirect(
                 $request,
                 true,
-                'Order status updated successfully',
+                'Order status updated successfully to ' . ucfirst($validated['status']),
                 200,
                 [
-                    'status' => $newStatus,
-                    'status_label' => ucfirst($newStatus),
-                    'status_badge' => view('admin.orders.partials.status-badge', ['status' => $newStatus])->render(),
-                    'timeline' => view('admin.orders.partials.timeline', ['order' => $order])->render()
+                    'status' => $validated['status'],
+                    'status_label' => ucfirst($validated['status'])
                 ]
             );
             
         } catch (\Exception $e) {
-            DB::rollBack();
             Log::error('Error updating order status: ' . $e->getMessage());
             
             return $this->jsonOrRedirect(

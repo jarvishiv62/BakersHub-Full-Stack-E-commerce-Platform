@@ -14,7 +14,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::query();
+        $query = Product::withTrashed();
         
         // Filter by active status if provided
         if ($request->has('status') && in_array($request->status, ['0', '1'])) {
@@ -30,7 +30,11 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $categories = Product::select('category')->distinct()->pluck('category');
+        $categories = Product::withTrashed()
+            ->select('category')
+            ->distinct()
+            ->pluck('category');
+            
         return view('admin.products.create', compact('categories'));
     }
 
@@ -64,7 +68,11 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $categories = Product::select('category')->distinct()->pluck('category');
+        $categories = Product::withTrashed()
+            ->select('category')
+            ->distinct()
+            ->pluck('category');
+            
         return view('admin.products.edit', compact('product', 'categories'));
     }
 

@@ -25,11 +25,13 @@ class HomeController extends Controller
             });
             
         // Get unique product categories with an example product image
-        $categories = Product::select('category')
+        $categories = Product::withTrashed()
+            ->select('category')
             ->distinct()
             ->get()
             ->map(function($category) {
-                $product = Product::where('category', $category->category)
+                $product = Product::withTrashed()
+                    ->where('category', $category->category)
                     ->whereNotNull('image')
                     ->first();
                     

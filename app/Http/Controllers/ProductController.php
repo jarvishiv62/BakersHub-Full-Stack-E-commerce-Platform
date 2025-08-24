@@ -15,7 +15,8 @@ class ProductController extends Controller
         $query = Product::query();
 
         // Get all categories with their slugs for the filter
-        $allCategories = Product::select('category')
+        $allCategories = Product::withTrashed()
+            ->select('category')
             ->distinct()
             ->orderBy('category')
             ->get()
@@ -77,8 +78,10 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $relatedProducts = Product::where('category', $product->category)
+        $relatedProducts = Product::withTrashed()
+            ->where('category', $product->category)
             ->where('id', '!=', $product->id)
+            ->where('is_active', true)
             ->inRandomOrder()
             ->take(4)
             ->get();
