@@ -1,4 +1,4 @@
-<header class="site-header bg-white shadow-sm">
+<header class="site-header bg-white shadow-sm"> 
     <!-- Main Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
         <div class="container">
@@ -17,13 +17,18 @@
             <div class="collapse navbar-collapse order-lg-2" id="mainNavbar">
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
                     @foreach($navigation as $key => $item)
+                        {{-- ===================== Mega Menu ===================== --}}
                         @if(isset($item['mega_menu']) && $item['mega_menu'])
-                            <!-- Mega Menu -->
-                            <li class="nav-item dropdown px-lg-2 mega-menu">
-                                <a class="nav-link dropdown-toggle" href="{{ $item['url'] }}" id="{{ $key }}Dropdown"
-                                    role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                            <li class="nav-item dropdown px-lg-2 mega-menu d-flex align-items-center">
+                                <!-- Parent link (navigates) -->
+                                <a class="nav-link" href="{{ $item['url'] }}">
                                     {{ strtoupper($item['title']) }}
                                 </a>
+                                <!-- Dropdown toggle -->
+                                <button class="btn dropdown-toggle border-0 bg-transparent p-0 ms-1"
+                                        id="{{ $key }}Dropdown" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                                <!-- Mega Menu -->
                                 <div class="dropdown-menu dropdown-mega border-0 shadow p-4"
                                     aria-labelledby="{{ $key }}Dropdown"
                                     style="min-width: 750px; left: 50%; transform: translateX(-50%);">
@@ -61,13 +66,19 @@
                                     </div>
                                 </div>
                             </li>
+
+                        {{-- ===================== Regular Dropdown ===================== --}}
                         @elseif(isset($item['items']) && count($item['items']) > 0)
-                            <!-- Regular Dropdown -->
-                            <li class="nav-item dropdown px-lg-2">
-                                <a class="nav-link dropdown-toggle" href="{{ $item['url'] }}" id="{{ $key }}Dropdown"
-                                    role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <li class="nav-item dropdown px-lg-2 d-flex align-items-center">
+                                <!-- Parent link -->
+                                <a class="nav-link" href="{{ $item['url'] }}">
                                     {{ strtoupper($item['title']) }}
                                 </a>
+                                <!-- Dropdown toggle -->
+                                <button class="btn dropdown-toggle border-0 bg-transparent p-0 ms-1"
+                                        id="{{ $key }}Dropdown" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                                <!-- Dropdown Menu -->
                                 <ul class="dropdown-menu border-0 shadow" aria-labelledby="{{ $key }}Dropdown">
                                     @foreach($item['items'] as $subItem)
                                         @if(
@@ -83,8 +94,9 @@
                                     @endforeach
                                 </ul>
                             </li>
+
+                        {{-- ===================== Simple Link ===================== --}}
                         @else
-                            <!-- Simple Link -->
                             <li class="nav-item px-lg-2">
                                 <a class="nav-link" href="{{ $item['url'] }}">
                                     {{ strtoupper($item['title']) }}
@@ -98,10 +110,39 @@
             <!-- Right Section - Icons and Button -->
             <div class="d-flex align-items-center order-lg-3 ms-lg-4">
                 <!-- Account -->
-                <a href="{{ auth()->check() ? route('account') : route('login') }}"
-                    class="nav-link text-dark position-relative px-3" aria-label="Account">
-                    <i class="fas fa-user fa-lg"></i>
-                </a>
+                @auth
+                    <div class="dropdown">
+                        <a href="#" class="nav-link text-dark position-relative px-3 dropdown-toggle" id="accountDropdown" 
+                           data-bs-toggle="dropdown" aria-expanded="false" aria-label="My Account">
+                            <i class="fas fa-user fa-lg"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow" aria-labelledby="accountDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{{ route('account') }}">
+                                    <i class="fas fa-user-circle me-2"></i> My Account
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('account.orders') }}">
+                                    <i class="fas fa-shopping-bag me-2"></i> My Orders
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                @else
+                    <a href="{{ route('login') }}" class="nav-link text-dark position-relative px-3" aria-label="Login">
+                        <i class="fas fa-user fa-lg"></i>
+                    </a>
+                @endauth
 
                 <!-- Search -->
                 <a href="#" class="nav-link text-dark px-3" aria-label="Search" data-bs-toggle="modal"
@@ -209,50 +250,40 @@
         </div>
     </div>
 </div>
+
 @push('scripts')
     <script>
-        // Mobile menu toggle functionality
+        // Mobile menu toggle
         const mobileMenu = new bootstrap.Offcanvas(document.getElementById('mobileMenu'));
 
-        // Initialize dropdowns with hover functionality for desktop
+        // Desktop dropdown hover (optional)
         function initDropdowns() {
             const dropdowns = document.querySelectorAll('.dropdown');
-
-            // Only add hover functionality on desktop
             if (window.innerWidth >= 992) {
                 dropdowns.forEach(dropdown => {
-                    const toggle = dropdown.querySelector('.dropdown-toggle');
+                    const toggle = dropdown.querySelector('[data-bs-toggle="dropdown"]');
                     const menu = dropdown.querySelector('.dropdown-menu');
                     let timeoutId;
 
-                    // Show on hover
                     dropdown.addEventListener('mouseenter', () => {
                         clearTimeout(timeoutId);
-                        const bsDropdown = bootstrap.Dropdown.getInstance(toggle);
-                        if (bsDropdown) {
-                            bsDropdown.show();
-                        }
+                        const bsDropdown = bootstrap.Dropdown.getOrCreateInstance(toggle);
+                        bsDropdown.show();
                     });
 
-                    // Hide with delay
                     dropdown.addEventListener('mouseleave', () => {
                         timeoutId = setTimeout(() => {
-                            const bsDropdown = bootstrap.Dropdown.getInstance(toggle);
-                            if (bsDropdown) {
-                                bsDropdown.hide();
-                            }
-                        }, 300); // 300ms delay before hiding
+                            const bsDropdown = bootstrap.Dropdown.getOrCreateInstance(toggle);
+                            bsDropdown.hide();
+                        }, 300);
                     });
 
-                    // Keep menu open when hovering over it
                     if (menu) {
                         menu.addEventListener('mouseenter', () => clearTimeout(timeoutId));
                         menu.addEventListener('mouseleave', () => {
                             timeoutId = setTimeout(() => {
-                                const bsDropdown = bootstrap.Dropdown.getInstance(toggle);
-                                if (bsDropdown) {
-                                    bsDropdown.hide();
-                                }
+                                const bsDropdown = bootstrap.Dropdown.getOrCreateInstance(toggle);
+                                bsDropdown.hide();
                             }, 300);
                         });
                     }
@@ -260,37 +291,9 @@
             }
         }
 
-        // Initialize all components when DOM is loaded
         document.addEventListener('DOMContentLoaded', function () {
-            // Initialize dropdowns
-            const dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
-            const dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
-                return new bootstrap.Dropdown(dropdownToggleEl, {
-                    autoClose: true,
-                    popperConfig: (defaultConfig) => ({
-                        ...defaultConfig,
-                        strategy: 'fixed'
-                    })
-                });
-            });
-
-            // Initialize hover functionality
             initDropdowns();
-
-            // Re-initialize on window resize
-            let resizeTimer;
-            window.addEventListener('resize', function () {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(initDropdowns, 250);
-            });
-        });
-
-        // Search modal toggle
-        document.querySelectorAll('[data-bs-toggle="search"]').forEach(toggle => {
-            toggle.addEventListener('click', () => {
-                const searchModal = new bootstrap.Modal(document.getElementById('searchModal'));
-                searchModal.show();
-            });
+            window.addEventListener('resize', () => initDropdowns());
         });
     </script>
 @endpush

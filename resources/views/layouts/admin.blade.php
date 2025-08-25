@@ -59,6 +59,11 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{ route('admin.customers.index') }}" class="nav-link {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
+                                <i class="bi bi-people"></i> Customers
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ route('admin.products.index') }}" class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
                                 <i class="bi bi-cart"></i> Products
                             </a>

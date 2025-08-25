@@ -2,10 +2,8 @@
 
 namespace App\Http\View\Composers;
 
-
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Session;
-
 
 class HeaderComposer
 {
@@ -24,28 +22,28 @@ class HeaderComposer
                     [
                         'title' => 'Cupcakes',
                         'items' => [
-                            ['name' => 'Classic Cupcakes', 'url' => route('products', ['category' => 'classic-cupcakes'])],
-                            ['name' => 'Seasonal Cupcakes', 'url' => route('products', ['category' => 'seasonal-cupcakes'])],
-                            ['name' => 'Mini Cupcakes', 'url' => route('products', ['category' => 'mini-cupcakes'])],
-                            ['name' => 'Cupcake Cakes', 'url' => route('products', ['category' => 'cupcake-cakes'])],
+                            ['name' => 'Classic Cupcakes', 'url' => route('products.category', 'classic-cupcakes')],
+                            ['name' => 'Seasonal Cupcakes', 'url' => route('products.category', 'seasonal-cupcakes')],
+                            ['name' => 'Mini Cupcakes', 'url' => route('products.category', 'mini-cupcakes')],
+                            ['name' => 'Cupcake Cakes', 'url' => route('products.category', 'cupcake-cakes')],
                         ]
                     ],
                     [
                         'title' => 'Cakes',
                         'items' => [
-                            ['name' => 'Birthday Cakes', 'url' => route('products', ['category' => 'birthday-cakes'])],
-                            ['name' => 'Wedding Cakes', 'url' => route('products', ['category' => 'wedding-cakes'])],
-                            ['name' => 'Custom Cakes', 'url' => route('products', ['category' => 'custom-cakes'])],
-                            ['name' => 'Cheesecakes', 'url' => route('products', ['category' => 'cheesecakes'])],
+                            ['name' => 'Birthday Cakes', 'url' => route('products.category', 'birthday-cakes')],
+                            ['name' => 'Wedding Cakes', 'url' => route('products.category', 'wedding-cakes')],
+                            ['name' => 'Custom Cakes', 'url' => route('products.category', 'custom-cakes')],
+                            ['name' => 'Cheesecakes', 'url' => route('products.category', 'cheesecakes')],
                         ]
                     ],
                     [
                         'title' => 'Cookies & More',
                         'items' => [
-                            ['name' => 'Cookies', 'url' => route('products', ['category' => 'cookies'])],
-                            ['name' => 'Brownies', 'url' => route('products', ['category' => 'brownies'])],
-                            ['name' => 'Dessert Bars', 'url' => route('products', ['category' => 'dessert-bars'])],
-                            ['name' => 'Seasonal Specials', 'url' => route('products', ['category' => 'seasonal-specials'])],
+                            ['name' => 'Cookies', 'url' => route('products.category', 'cookies')],
+                            ['name' => 'Brownies', 'url' => route('products.category', 'brownies')],
+                            ['name' => 'Dessert Bars', 'url' => route('products.category', 'dessert-bars')],
+                            ['name' => 'Seasonal Specials', 'url' => route('products.category', 'seasonal-specials')],
                         ]
                     ]
                 ]

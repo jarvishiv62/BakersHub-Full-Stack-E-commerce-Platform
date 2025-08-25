@@ -19,10 +19,6 @@ class PageController extends Controller
         return view('catering');
     }
 
-    public function account()
-    {
-        return view('account');
-    }
 
     public function search()
     {

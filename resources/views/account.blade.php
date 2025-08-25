@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Account | ' . config('app.name'))
+@section('title', 'My Account | ' . config('app.name'))
 
 @section('content')
 <div class="container">
@@ -21,39 +21,57 @@
                     <h2>Profile Information</h2>
                 </div>
                 <div class="section-content bg-white">
-                    <form id="profileForm">
+                    <form action="{{ route('account.profile.update') }}" method="POST" id="profileForm">
                         @csrf
+                        @method('PUT')
                         <div class="row">
                             <div class="col-md-4 text-center mb-4">
                                 <div class="position-relative d-inline-block mb-3">
-                                    <img src="#" class="rounded-circle img-thumbnail" width="150" height="150" alt="Profile Picture">
+                                    <img src="{{ asset('images/default-avatar.png') }}" class="rounded-circle img-thumbnail" width="150" height="150" alt="{{ $user->name }}" id="profileImage">
                                     <label class="btn btn-sm btn-vanilla position-absolute bottom-0 end-0 rounded-circle" style="width: 40px; height: 40px;" title="Change Photo">
                                         <i class="fas fa-camera"></i>
                                         <input type="file" class="d-none" id="profilePicture" accept="image/*">
                                     </label>
                                 </div>
+                                <div class="mt-2">
+                                    <span class="badge bg-{{ $user->status === 'active' ? 'success' : 'secondary' }}">
+                                        {{ ucfirst($user->status) }}
+                                    </span>
+                                    <p class="text-muted small mt-2">Member since {{ $user->created_at->format('M Y') }}</p>
+                                </div>
                             </div>
                             <div class="col-md-8">
+                                @if(session('success'))
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        {{ session('success') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label for="name" class="form-label">Full Name</label>
-                                        <input type="text" class="form-control" id="name" name="name" required>
+                                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $user->name) }}" required>
+                                        @error('name')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <div class="col-md-6">
                                         <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="email" name="email" required>
+                                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $user->email) }}" required>
+                                        @error('email')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <div class="col-12">
                                         <label for="phone" class="form-label">Phone Number</label>
-                                        <input type="tel" class="form-control" id="phone" name="phone" required>
-                                    </div>
-                                    <div class="col-12">
-                                        <label for="address" class="form-label">Delivery Address</label>
-                                        <textarea class="form-control" id="address" name="address" rows="2"></textarea>
+                                        <input type="tel" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone', $user->phone) }}">
+                                        @error('phone')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <div class="col-12">
                                         <button type="submit" class="btn btn-chocolate text-white">
-                                            <i class="fas fa-save me-2"></i>Save Changes
+                                            <i class="fas fa-save me-2"></i>Update Profile
                                         </button>
                                         <button type="button" class="btn btn-outline-chocolate ms-2" data-bs-toggle="collapse" data-bs-target="#passwordCollapse" aria-expanded="false" aria-controls="passwordCollapse">
                                             Change Password
@@ -67,69 +85,105 @@
                         <div class="collapse mt-4" id="passwordCollapse">
                             <hr>
                             <h5 class="mb-4">Change Password</h5>
+                            <form action="{{ route('account.password.update') }}" method="POST">
+                            @csrf
+                            @method('PUT')
                             <div class="row g-3">
                                 <div class="col-md-4">
-                                    <label for="currentPassword" class="form-label">Current Password</label>
-                                    <input type="password" class="form-control" id="currentPassword">
+                                    <label for="current_password" class="form-label">Current Password</label>
+                                    <input type="password" class="form-control @error('current_password') is-invalid @enderror" name="current_password" id="current_password" required>
+                                    @error('current_password')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-4">
-                                    <label for="newPassword" class="form-label">New Password</label>
-                                    <input type="password" class="form-control" id="newPassword">
+                                    <label for="password" class="form-label">New Password</label>
+                                    <input type="password" class="form-control @error('password') is-invalid @enderror" name="password" id="password" required>
+                                    @error('password')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-4">
-                                    <label for="confirmPassword" class="form-label">Confirm New Password</label>
-                                    <input type="password" class="form-control" id="confirmPassword">
+                                    <label for="password_confirmation" class="form-label">Confirm New Password</label>
+                                    <input type="password" class="form-control" name="password_confirmation" id="password_confirmation" required>
                                 </div>
                                 <div class="col-12">
-                                    <button type="button" class="btn btn-chocolate text-white" id="updatePassword">
-                                        Update Password
+                                    <button type="submit" class="btn btn-chocolate text-white">
+                                        <i class="fas fa-key me-2"></i>Update Password
                                     </button>
                                 </div>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
+                </form>
                 </div>
             </section>
 
             <!-- My Orders Section -->
             <section class="account-section">
-                <div class="section-header">
-                    <i class="fas fa-shopping-bag me-2"></i>
-                    <h2>My Orders</h2>
+                <div class="section-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-shopping-bag me-2"></i>
+                        <h2 class="d-inline-block">My Orders</h2>
+                    </div>
+                    @if($orders->count() > 0)
+                        <span class="badge bg-chocolate">{{ $orders->total() }} order(s)</span>
+                    @endif
                 </div>
                 <div class="section-content bg-white">
-                    @if(isset($orders) && count($orders) > 0)
-                        @foreach($orders as $order)
-                            <div class="card mb-3 border-0 shadow-sm">
-                                <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-4">
-                                            <h6 class="mb-1">Order #{{ $order['id'] }}</h6>
-                                            <small class="text-muted">Placed on {{ $order['date'] }}</small>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <span class="badge bg-{{ $order['status'] == 'completed' ? 'success' : ($order['status'] == 'processing' ? 'warning' : 'secondary') }} text-capitalize">
-                                                {{ $order['status'] }}
-                                            </span>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <h6 class="mb-0">${{ number_format($order['total'], 2) }}</h6>
-                                        </div>
-                                        <div class="col-md-2 text-end">
-                                            <button class="btn btn-sm btn-outline-chocolate view-order-details" data-bs-toggle="modal" data-bs-target="#orderDetailsModal" data-order-id="{{ $order['id'] }}">
-                                                View Details
-                                            </button>
-                                        </div>
-                                    </div>
+                    @if($orders->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Total</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($orders as $order)
+                                        <tr>
+                                            <td>#{{ $order->id }}</td>
+                                            <td>{{ $order->created_at->format('M d, Y') }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ $order->status === 'completed' ? 'success' : ($order->status === 'cancelled' ? 'danger' : 'warning') }}">
+                                                    {{ ucfirst($order->status) }}
+                                                </span>
+                                            </td>
+                                            <td>${{ number_format($order->total, 2) }}</td>
+                                            <td class="text-end">
+                                                <a href="{{ route('account.orders.show', $order) }}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye me-1"></i> View
+                                                </a>
+                                                @if($order->status === 'completed')
+                                                    <button class="btn btn-sm btn-chocolate text-white" data-bs-toggle="modal" data-bs-target="#reorderModal" data-order-id="{{ $order->id }}">
+                                                        <i class="fas fa-redo me-1"></i> Reorder
+                                                    </button>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            
+                            <!-- Pagination -->
+                            @if($orders->hasPages())
+                                <div class="d-flex justify-content-center mt-4">
+                                    {{ $orders->links() }}
                                 </div>
-                            </div>
-                        @endforeach
+                            @endif
+                        </div>
                     @else
                         <div class="text-center py-5">
-                            <img src="{{ asset('images/empty-order.svg') }}" alt="No Orders" class="img-fluid mb-3" style="max-width: 200px;">
-                            <h5 class="text-muted">No orders yet</h5>
-                            <p class="text-muted">Your order history will appear here</p>
-                            <a href="{{ route('products') }}" class="btn btn-chocolate text-white">Start Shopping</a>
+                            <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                            <h5>No orders yet</h5>
+                            <p class="text-muted">You haven't placed any orders yet.</p>
+                            <a href="{{ route('products') }}" class="btn btn-chocolate text-white">
+                                <i class="fas fa-shopping-cart me-2"></i>Start Shopping
+                            </a>
                         </div>
                     @endif
                 </div>

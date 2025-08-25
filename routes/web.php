@@ -8,40 +8,80 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AboutController;
 
-
+// =============================
 // Authentication Routes
+// =============================
 Route::get('/login', [PageController::class, 'login'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/register', [PageController::class, 'register'])->name('register');
+
+// =============================
+// Account Management Routes
+// =============================
+Route::middleware('auth')->group(function () {
+    // Account Dashboard
+    Route::get('/account', [AccountController::class, 'dashboard'])->name('account');
+    
+    // Profile Update
+    Route::post('/account/profile', [AccountController::class, 'updateProfile'])->name('account.profile.update');
+    
+    // Password Update
+    Route::post('/account/password', [AccountController::class, 'updatePassword'])->name('account.password.update');
+    
+    // Order History
+    Route::get('/account/orders', [AccountController::class, 'dashboard'])->name('account.orders');
+    Route::get('/account/orders/{order}', [AccountController::class, 'showOrder'])->name('account.orders.show');
+    
+    // Logout
+    Route::post('/logout', [AccountController::class, 'logout'])->name('logout');
+});
 Route::get('/forgot-password', [PageController::class, 'forgotPassword'])->name('password.request');
 Route::get('/reset-password/{token}', [PageController::class, 'resetPassword'])->name('password.reset');
 
+// =============================
+// Admin Routes (separate file)
+// =============================
+require __DIR__ . '/admin.php';
+
+// =============================
 // Frontend Routes
+// =============================
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::get('/catering', [PageController::class, 'catering'])->name('catering');
 Route::get('/cart', [PageController::class, 'cart'])->name('cart');
-Route::get('/account', [PageController::class, 'account'])->name('account');
-// Search is handled by ProductController@index
 
+// =============================
 // Product Routes
+// =============================
+// Show all products
 Route::get('/products', [ProductController::class, 'index'])->name('products');
+
+// Show products by category (SEO-friendly slugs)
+Route::get('/products/category/{category}', [ProductController::class, 'index'])
+    ->name('products.category')
+    ->where('category', '[a-z0-9-]+');
+
+// Show single product details (numeric ID only)
 Route::get('/products/{product}', [ProductController::class, 'show'])
     ->name('products.show')
-    ->where('product', '[0-9]+'); // Ensure only numeric IDs are accepted
+    ->where('product', '[0-9]+');
 
+// =============================
 // Admin Dashboard
+// =============================
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
 
-    // Products Management
     // Products Management
     Route::resource('products', \App\Http\Controllers\Admin\ProductController::class)
         ->except(['show']);
@@ -62,7 +102,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::post('testimonials/{testimonial}/status', [\App\Http\Controllers\Admin\TestimonialController::class, 'updateStatus'])
         ->name('testimonials.status');
 });
-// Cart Routes
+
+// =============================
+// Cart + Checkout Routes
+// =============================
 Route::middleware('web')->group(function () {
     // Cart Routes
     Route::prefix('cart')->group(function () {
@@ -79,9 +122,10 @@ Route::middleware('web')->group(function () {
     Route::get('/order/success/{id}', [CheckoutController::class, 'success'])->name('order.success');
 });
 
-// Admin routes with auth and admin middleware
+// =============================
+// Admin Order Routes (auth+admin)
+// =============================
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
-    // Admin Order Routes
     Route::get('/orders', [OrderController::class, 'index'])
         ->name('admin.orders.index');
 
@@ -93,7 +137,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         ->name('admin.orders.update-status')
         ->where('order', '[0-9]+');
 
-    // Additional order management routes can be added here
-        // Example: Route::post('/orders/{order}/invoice', [OrderController::class, 'generateInvoice'])
-        //     ->name('admin.orders.invoice');
-    });
+    // Example: Route for generating invoice
+    // Route::post('/orders/{order}/invoice', [OrderController::class, 'generateInvoice'])
+    //     ->name('admin.orders.invoice');
+});
