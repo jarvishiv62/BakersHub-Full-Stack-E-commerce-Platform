@@ -71,11 +71,86 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the orders for the user.
+     * Check if the user is an admin
+     *
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->is_admin === true;
+    }
+    
+    /**
+     * Get all orders for the user
      */
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+    
+    /**
+     * Get all order items for the user
+     */
+    public function orderItems()
+    {
+        return $this->hasManyThrough(OrderItem::class, Order::class);
+    }
+    
+    /**
+     * Get the user's active (not completed or cancelled) orders
+     */
+    public function activeOrders()
+    {
+        return $this->orders()
+            ->whereNotIn('status', ['delivered', 'cancelled'])
+            ->orderBy('created_at', 'desc');
+    }
+    
+    /**
+     * Get the user's completed orders
+     */
+    public function completedOrders()
+    {
+        return $this->orders()
+            ->where('status', 'delivered')
+            ->orderBy('delivered_at', 'desc');
+    }
+    
+    /**
+     * Get the user's cancelled orders
+     */
+    public function cancelledOrders()
+    {
+        return $this->orders()
+            ->where('status', 'cancelled')
+            ->orderBy('updated_at', 'desc');
+    }
+    
+    /**
+     * Get the user's total spent amount
+     *
+     * @return float
+     */
+    public function getTotalSpentAttribute(): float
+    {
+        return (float) $this->orders()
+            ->where('payment_status', 'paid')
+            ->sum('total_amount');
+    }
+    
+    /**
+     * Get the user's order statistics
+     */
+    public function getOrderStatisticsAttribute()
+    {
+        return [
+            'total_orders' => $this->orders()->count(),
+            'total_spent' => $this->total_spent,
+            'avg_order_value' => $this->orders()->avg('total_amount') ?? 0,
+            'pending_orders' => $this->orders()->where('status', 'pending')->count(),
+            'completed_orders' => $this->completedOrders()->count(),
+            'cancelled_orders' => $this->cancelledOrders()->count(),
+        ];
     }
 
     /**
@@ -123,3 +198,4 @@ class User extends Authenticatable
         return $query->where('status', 'inactive');
     }
 }
+
