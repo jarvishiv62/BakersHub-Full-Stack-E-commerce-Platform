@@ -12,6 +12,19 @@ use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AboutController;
 
+// Debug route - remove in production
+Route::get('/debug-db', function () {
+    return [
+        'DB_HOST' => env('DB_HOST'),
+        'DB_PORT' => env('DB_PORT'),
+        'DB_DATABASE' => env('DB_DATABASE'),
+        'DB_USERNAME' => env('DB_USERNAME'),
+        'DB_PASSWORD' => env('DB_PASSWORD') ? '***SET***' : 'NULL',
+        'DB_CONNECTION' => env('DB_CONNECTION'),
+        'APP_ENV' => env('APP_ENV'),
+    ];
+});
+
 // =============================
 // Authentication Routes
 // =============================
@@ -26,17 +39,17 @@ Route::get('/register', [PageController::class, 'register'])->name('register');
 Route::middleware('auth')->group(function () {
     // Account Dashboard
     Route::get('/account', [AccountController::class, 'dashboard'])->name('account');
-    
+
     // Profile Update
     Route::post('/account/profile', [AccountController::class, 'updateProfile'])->name('account.profile.update');
-    
+
     // Password Update
     Route::post('/account/password', [AccountController::class, 'updatePassword'])->name('account.password.update');
-    
+
     // Order History
     Route::get('/account/orders', [AccountController::class, 'dashboard'])->name('account.orders');
     Route::get('/account/orders/{order}', [AccountController::class, 'showOrder'])->name('account.orders.show');
-    
+
     // Logout
     Route::post('/logout', [AccountController::class, 'logout'])->name('logout');
 });
