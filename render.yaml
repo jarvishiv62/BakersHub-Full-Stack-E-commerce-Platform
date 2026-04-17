@@ -6,16 +6,18 @@ services:
     plan: starter
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    publishDir: /var/www/html/public
+
     startCommand: >
       php artisan config:clear &&
       php artisan cache:clear &&
       php artisan route:clear &&
+      php artisan view:clear &&
       until php artisan migrate --force; do
         echo "Waiting for DB...";
         sleep 5;
       done &&
       apache2-foreground
+
     envVars:
       - key: APP_ENV
         value: production
@@ -27,6 +29,7 @@ services:
         value: https://bakershub-app.onrender.com
       - key: LOG_CHANNEL
         value: errorlog
+
       - key: DB_CONNECTION
         value: mysql
       - key: DB_HOST
@@ -49,12 +52,14 @@ services:
         fromDatabase:
           name: bakershub-db
           property: password
+
       - key: CACHE_DRIVER
         value: redis
       - key: SESSION_DRIVER
         value: redis
       - key: QUEUE_CONNECTION
         value: redis
+
       - key: REDIS_HOST
         fromService:
           type: redis
@@ -70,6 +75,7 @@ services:
           type: redis
           name: bakershub-redis
           property: password
+
     disk:
       name: bakershub-storage
       mountPath: /var/www/html/storage
@@ -80,6 +86,7 @@ services:
     name: bakershub-db
     env: mysql
     plan: starter
+
     envVars:
       - key: MYSQL_DATABASE
         value: bakershub
@@ -89,6 +96,7 @@ services:
         generateValue: true
       - key: MYSQL_ROOT_PASSWORD
         generateValue: true
+
     disk:
       name: bakershub-db-disk
       mountPath: /var/lib/mysql
