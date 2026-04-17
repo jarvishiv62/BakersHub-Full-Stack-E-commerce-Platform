@@ -2,7 +2,7 @@ services:
   # Laravel Web Service
   - type: web
     name: bakershub-app
-    env: php
+    runtime: php
     plan: starter
     buildCommand: |
       composer install --no-dev --optimize-autoloader
