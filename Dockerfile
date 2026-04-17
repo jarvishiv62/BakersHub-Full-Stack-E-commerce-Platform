@@ -43,11 +43,11 @@ RUN npm install && npm run production
 # Copy Laravel configuration
 RUN cp .env.example .env
 
-# Generate application key
-RUN php artisan key:generate
+# Generate application key directly
+RUN php -r "echo 'APP_KEY=base64:' . base64_encode(random_bytes(32)) >> .env"
 
 # Discover packages
-RUN php artisan package:discover
+RUN php artisan package:discover --force
 
 # Cache Laravel configurations
 RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
