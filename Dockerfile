@@ -35,7 +35,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY --chown=www-data:www-data . /var/www/html
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Install and build frontend assets
 RUN npm install && npm run production
@@ -45,6 +45,9 @@ RUN cp .env.example .env
 
 # Generate application key
 RUN php artisan key:generate
+
+# Discover packages
+RUN php artisan package:discover
 
 # Cache Laravel configurations
 RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
