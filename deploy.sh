@@ -7,6 +7,10 @@ echo "Starting deployment process..."
 # Install dependencies without dev packages
 composer install --no-dev --optimize-autoloader
 
+# Install and build frontend assets
+npm install
+npm run production
+
 # Clear and cache Laravel configurations
 php artisan config:clear
 php artisan config:cache
