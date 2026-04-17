@@ -1,0 +1,96 @@
+services:
+  # Laravel Web Service
+  - type: web
+    name: bakershub-app
+    env: php
+    plan: starter
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader
+      php artisan config:cache
+      php artisan route:cache
+      php artisan view:cache
+    startCommand: |
+      php artisan serve --host=0.0.0.0 --port=$PORT
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        value: https://bakershub-app.onrender.com
+      - key: LOG_CHANNEL
+        value: errorlog
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        fromDatabase:
+          name: bakershub-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: bakershub-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: bakershub-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: bakershub-db
+          property: username
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: bakershub-db
+          property: password
+      - key: CACHE_DRIVER
+        value: redis
+      - key: SESSION_DRIVER
+        value: redis
+      - key: QUEUE_CONNECTION
+        value: redis
+      - key: REDIS_HOST
+        fromService:
+          type: redis
+          name: bakershub-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: redis
+          name: bakershub-redis
+          property: port
+      - key: REDIS_PASSWORD
+        fromService:
+          type: redis
+          name: bakershub-redis
+          property: password
+    disk:
+      name: bakershub-storage
+      mountPath: /var/www/html/storage
+      sizeGB: 1
+
+  # MySQL Database
+  - type: pserv
+    name: bakershub-db
+    env: mysql
+    plan: starter
+    envVars:
+      - key: MYSQL_DATABASE
+        value: bakershub
+      - key: MYSQL_USER
+        value: bakershub_user
+      - key: MYSQL_PASSWORD
+        generateValue: true
+      - key: MYSQL_ROOT_PASSWORD
+        generateValue: true
+    disk:
+      name: bakershub-db-disk
+      mountPath: /var/lib/mysql
+      sizeGB: 10
+
+  # Redis Cache
+  - type: redis
+    name: bakershub-redis
+    plan: starter
+    ipAllowList: []
