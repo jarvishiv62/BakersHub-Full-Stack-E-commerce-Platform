@@ -7,16 +7,14 @@ services:
     dockerContext: .
 
     startCommand: >
-      rm -rf bootstrap/cache/* &&
       php artisan config:clear &&
       php artisan cache:clear &&
       php artisan route:clear &&
       php artisan view:clear &&
-      php artisan key:generate --force &&
-      echo "Waiting for DB..." &&
-      sleep 15 &&
+      php artisan config:cache &&
+      php artisan key:generate &&
       until php artisan migrate --force; do
-        echo "Retrying DB...";
+        echo "Waiting for DB...";
         sleep 5;
       done &&
       apache2-foreground
@@ -25,89 +23,82 @@ services:
       - key: APP_ENV
         value: production
 
-      # 🔥 TEMP ENABLE DEBUG (IMPORTANT)
       - key: APP_DEBUG
-        value: true
+        value: true   # 🔥 TEMP (see real error)
 
       - key: APP_KEY
         generateValue: true
 
       - key: APP_URL
-        value: https://bakershub-app.onrender.com
+        value: https://bakershub-full-stack-e-commerce-platform.onrender.com
 
       - key: LOG_CHANNEL
         value: errorlog
 
+      # DB CONFIG
       - key: DB_CONNECTION
         value: mysql
+
       - key: DB_HOST
         fromDatabase:
           name: bakershub-db
           property: host
+
       - key: DB_PORT
         fromDatabase:
           name: bakershub-db
           property: port
+
       - key: DB_DATABASE
         fromDatabase:
           name: bakershub-db
           property: database
+
       - key: DB_USERNAME
         fromDatabase:
           name: bakershub-db
           property: username
+
       - key: DB_PASSWORD
         fromDatabase:
           name: bakershub-db
           property: password
 
+      # 🔥 TEMP SAFE SETTINGS (avoid Redis crash)
       - key: CACHE_DRIVER
-        value: redis
-      - key: SESSION_DRIVER
-        value: redis
-      - key: QUEUE_CONNECTION
-        value: redis
+        value: file
 
-      - key: REDIS_HOST
-        fromService:
-          type: redis
-          name: bakershub-redis
-          property: host
-      - key: REDIS_PORT
-        fromService:
-          type: redis
-          name: bakershub-redis
-          property: port
-      - key: REDIS_PASSWORD
-        fromService:
-          type: redis
-          name: bakershub-redis
-          property: password
+      - key: SESSION_DRIVER
+        value: file
+
+      - key: QUEUE_CONNECTION
+        value: sync
 
     disk:
       name: bakershub-storage
       mountPath: /var/www/html/storage
       sizeGB: 1
 
+  # MySQL
   - type: pserv
     name: bakershub-db
     env: mysql
     plan: starter
+
     envVars:
       - key: MYSQL_DATABASE
         value: bakershub
+
       - key: MYSQL_USER
         value: bakershub_user
+
       - key: MYSQL_PASSWORD
         generateValue: true
+
       - key: MYSQL_ROOT_PASSWORD
         generateValue: true
+
     disk:
       name: bakershub-db-disk
       mountPath: /var/lib/mysql
       sizeGB: 10
-
-  - type: redis
-    name: bakershub-redis
-    plan: starter
-    ipAllowList: []

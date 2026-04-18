@@ -17,12 +17,11 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 # Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy app
-COPY --chown=www-data:www-data . .
+# Copy project
+COPY . .
 
-# 🔥 CRITICAL FIXES
-RUN rm -f .env
-RUN rm -rf bootstrap/cache/*
+# REMOVE env + cache (important)
+RUN rm -f .env && rm -rf bootstrap/cache/*
 
 # Install PHP deps
 RUN composer install --no-dev --optimize-autoloader
@@ -30,21 +29,21 @@ RUN composer install --no-dev --optimize-autoloader
 # Frontend build
 RUN npm install && npm run production
 
-# Set Apache root
+# Set Apache document root
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
-# Enable .htaccess
-RUN a2enmod rewrite && \
-    echo '<Directory /var/www/html/public>\n\
-    AllowOverride All\n\
-</Directory>' >> /etc/apache2/apache2.conf
+# Enable .htaccess + fix override
+RUN a2enmod rewrite \
+    && echo "ServerName localhost" >> /etc/apache2/apache2.conf \
+    && printf '<Directory /var/www/html/public>\nAllowOverride All\nRequire all granted\n</Directory>\n' >> /etc/apache2/apache2.conf
 
 # Permissions
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 EXPOSE 80
+
 CMD ["apache2-foreground"]
