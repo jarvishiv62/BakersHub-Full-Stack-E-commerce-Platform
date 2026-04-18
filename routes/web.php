@@ -12,17 +12,13 @@ use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AboutController;
 
-// Debug route - remove in production
-Route::get('/debug-db', function () {
-    return [
-        'DB_HOST' => env('DB_HOST'),
-        'DB_PORT' => env('DB_PORT'),
-        'DB_DATABASE' => env('DB_DATABASE'),
-        'DB_USERNAME' => env('DB_USERNAME'),
-        'DB_PASSWORD' => env('DB_PASSWORD') ? '***SET***' : 'NULL',
-        'DB_CONNECTION' => env('DB_CONNECTION'),
-        'APP_ENV' => env('APP_ENV'),
-    ];
+// Health check route
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'timestamp' => now()->toISOString(),
+        'environment' => env('APP_ENV', 'unknown')
+    ]);
 });
 
 // =============================
