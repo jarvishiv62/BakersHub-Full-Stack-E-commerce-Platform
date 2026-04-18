@@ -20,7 +20,7 @@ services:
         value: true # 🔥 TEMP (see real error)
 
       - key: APP_KEY
-        generateValue: true
+        value: base64:IaPOxVZQWjK3EY3fzOn6kWfdy72bREOJZaPCi+5Fctk=
 
       - key: APP_URL
         value: https://bakershub-full-stack-e-commerce-platform.onrender.com
@@ -33,29 +33,19 @@ services:
         value: mysql
 
       - key: DB_HOST
-        fromDatabase:
-          name: bakershub-db
-          property: host
+        value: bakershub-db
 
       - key: DB_PORT
-        fromDatabase:
-          name: bakershub-db
-          property: port
+        value: 3306
 
       - key: DB_DATABASE
-        fromDatabase:
-          name: bakershub-db
-          property: database
+        value: bakershub
 
       - key: DB_USERNAME
-        fromDatabase:
-          name: bakershub-db
-          property: username
+        value: bakershub
 
       - key: DB_PASSWORD
-        fromDatabase:
-          name: bakershub-db
-          property: password
+        value: ""
 
       # 🔥 TEMP SAFE SETTINGS (avoid Redis crash)
       - key: CACHE_DRIVER
