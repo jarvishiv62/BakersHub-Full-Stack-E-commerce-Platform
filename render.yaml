@@ -1,5 +1,4 @@
 services:
-  # Laravel Web Service
   - type: web
     name: bakershub-app
     env: docker
@@ -8,12 +7,16 @@ services:
     dockerContext: .
 
     startCommand: >
+      rm -rf bootstrap/cache/* &&
       php artisan config:clear &&
       php artisan cache:clear &&
       php artisan route:clear &&
       php artisan view:clear &&
+      php artisan key:generate --force &&
+      echo "Waiting for DB..." &&
+      sleep 15 &&
       until php artisan migrate --force; do
-        echo "Waiting for DB...";
+        echo "Retrying DB...";
         sleep 5;
       done &&
       apache2-foreground
@@ -21,12 +24,17 @@ services:
     envVars:
       - key: APP_ENV
         value: production
+
+      # 🔥 TEMP ENABLE DEBUG (IMPORTANT)
       - key: APP_DEBUG
-        value: false
+        value: true
+
       - key: APP_KEY
         generateValue: true
+
       - key: APP_URL
         value: https://bakershub-app.onrender.com
+
       - key: LOG_CHANNEL
         value: errorlog
 
@@ -81,12 +89,10 @@ services:
       mountPath: /var/www/html/storage
       sizeGB: 1
 
-  # MySQL Database
   - type: pserv
     name: bakershub-db
     env: mysql
     plan: starter
-
     envVars:
       - key: MYSQL_DATABASE
         value: bakershub
@@ -96,13 +102,11 @@ services:
         generateValue: true
       - key: MYSQL_ROOT_PASSWORD
         generateValue: true
-
     disk:
       name: bakershub-db-disk
       mountPath: /var/lib/mysql
       sizeGB: 10
 
-  # Redis Cache
   - type: redis
     name: bakershub-redis
     plan: starter

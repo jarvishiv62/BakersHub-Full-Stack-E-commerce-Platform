@@ -20,8 +20,9 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy app
 COPY --chown=www-data:www-data . .
 
-# Remove env + cache
-RUN rm -f .env && rm -rf bootstrap/cache/*
+# 🔥 CRITICAL FIXES
+RUN rm -f .env
+RUN rm -rf bootstrap/cache/*
 
 # Install PHP deps
 RUN composer install --no-dev --optimize-autoloader
@@ -29,13 +30,13 @@ RUN composer install --no-dev --optimize-autoloader
 # Frontend build
 RUN npm install && npm run production
 
-# Set Apache to Laravel public
+# Set Apache root
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
-# 🔥 CRITICAL: Enable .htaccess
+# Enable .htaccess
 RUN a2enmod rewrite && \
     echo '<Directory /var/www/html/public>\n\
     AllowOverride All\n\
