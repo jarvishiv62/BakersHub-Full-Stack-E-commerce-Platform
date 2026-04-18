@@ -21,6 +21,19 @@ Route::get('/health', function () {
     ]);
 });
 
+// Environment debug route
+Route::get('/debug-env', function () {
+    return [
+        'APP_ENV' => env('APP_ENV', 'NOT_SET'),
+        'APP_DEBUG' => env('APP_DEBUG', 'NOT_SET'),
+        'APP_KEY' => env('APP_KEY', 'NOT_SET') ? 'SET' : 'NOT_SET',
+        'DB_CONNECTION' => env('DB_CONNECTION', 'NOT_SET'),
+        'DB_HOST' => env('DB_HOST', 'NOT_SET'),
+        'DB_DATABASE' => env('DB_DATABASE', 'NOT_SET'),
+        'CACHE_DRIVER' => env('CACHE_DRIVER', 'NOT_SET'),
+    ];
+});
+
 // =============================
 // Authentication Routes
 // =============================
