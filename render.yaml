@@ -7,17 +7,9 @@ services:
     dockerContext: .
 
     startCommand: >
-      php artisan config:clear &&
-      php artisan cache:clear &&
-      php artisan route:clear &&
-      php artisan view:clear &&
       php artisan key:generate --force &&
       chmod -R 775 storage bootstrap/cache &&
       chown -R www-data:www-data storage bootstrap/cache &&
-      until php artisan migrate --force; do
-        echo "Waiting for DB...";
-        sleep 5;
-      done &&
       apache2-foreground
 
     envVars:
