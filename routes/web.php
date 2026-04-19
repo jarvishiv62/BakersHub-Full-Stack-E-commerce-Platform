@@ -34,6 +34,19 @@ Route::get('/debug-env', function () {
     ];
 });
 
+// Debug login view
+Route::get('/debug-login', function () {
+    try {
+        return view('auth.login');
+    } catch (\Exception $e) {
+        return [
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ];
+    }
+});
+
 // =============================
 // Authentication Routes
 // =============================

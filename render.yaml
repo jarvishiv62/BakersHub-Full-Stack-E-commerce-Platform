@@ -7,8 +7,13 @@ services:
     dockerContext: .
 
     startCommand: >
-      php artisan migrate --force &&
-      php artisan db:seed --force &&
+      php artisan config:clear &&
+      php artisan cache:clear &&
+      php artisan key:generate &&
+      until php artisan migrate --seed --force; do
+        echo "Waiting for DB...";
+        sleep 5;
+      done &&
       chmod -R 775 storage bootstrap/cache &&
       chown -R www-data:www-data storage bootstrap/cache &&
       apache2-foreground
@@ -34,7 +39,7 @@ services:
         value: mysql
 
       - key: DB_HOST
-        value: bakershub-db
+        value: dpg-cf1a7l62dvs43d7l9vg-a.internal
 
       - key: DB_PORT
         value: 3306
