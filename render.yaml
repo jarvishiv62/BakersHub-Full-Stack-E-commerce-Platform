@@ -10,10 +10,11 @@ services:
       php artisan config:clear &&
       php artisan cache:clear &&
       php artisan key:generate &&
-      until php artisan migrate --seed --force; do
+      until php artisan migrate --force; do
         echo "Waiting for DB...";
         sleep 5;
       done &&
+      php artisan db:seed --force &&
       chmod -R 775 storage bootstrap/cache &&
       chown -R www-data:www-data storage bootstrap/cache &&
       apache2-foreground

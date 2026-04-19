@@ -47,6 +47,38 @@ Route::get('/debug-login', function () {
     }
 });
 
+// Debug database status
+Route::get('/debug-db-status', function () {
+    try {
+        // Check if tables exist
+        $tables = \DB::select("SHOW TABLES");
+
+        // Check counts
+        $users = \DB::table('users')->count();
+        $products = \DB::table('products')->count();
+        $testimonials = \DB::table('testimonials')->count();
+        $occasions = \DB::table('occasions')->count();
+
+        return [
+            'tables' => array_column($tables, 'Tables_in_' . env('DB_DATABASE', 'bakershub')),
+            'counts' => [
+                'users' => $users,
+                'products' => $products,
+                'testimonials' => $testimonials,
+                'occasions' => $occasions,
+            ],
+            'db_connection' => env('DB_HOST'),
+            'db_database' => env('DB_DATABASE'),
+        ];
+    } catch (\Exception $e) {
+        return [
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ];
+    }
+});
+
 // =============================
 // Authentication Routes
 // =============================
