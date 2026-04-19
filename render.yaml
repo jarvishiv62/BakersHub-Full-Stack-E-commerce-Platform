@@ -7,7 +7,6 @@ services:
     dockerContext: .
 
     startCommand: >
-      php artisan key:generate --force &&
       chmod -R 775 storage bootstrap/cache &&
       chown -R www-data:www-data storage bootstrap/cache &&
       apache2-foreground
