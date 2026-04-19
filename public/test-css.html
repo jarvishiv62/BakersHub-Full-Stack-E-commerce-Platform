@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Test</title>
+    <link rel="stylesheet" href="/css/app.css">
+    <style>
+        .test-box {
+            background: var(--color-primary, #E83F6F);
+            color: white;
+            padding: 20px;
+            margin: 20px;
+            border-radius: var(--radius-sm, 8px);
+        }
+        .fallback {
+            background: #E83F6F;
+            color: white;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>CSS Test Page</h1>
+    
+    <div class="test-box">
+        This should have pink background if CSS variables work
+    </div>
+    
+    <div class="fallback">
+        This should have pink background as fallback
+    </div>
+    
+    <p>URL: <code>/css/app.css</code></p>
+    <p>Full URL: <code>https://bakershub-full-stack-e-commerce-platform.onrender.com/css/app.css</code></p>
+</body>
+</html>

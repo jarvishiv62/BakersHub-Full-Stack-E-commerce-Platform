@@ -7,6 +7,8 @@ services:
     dockerContext: .
 
     startCommand: >
+      php artisan migrate --force &&
+      php artisan db:seed --force &&
       chmod -R 775 storage bootstrap/cache &&
       chown -R www-data:www-data storage bootstrap/cache &&
       apache2-foreground

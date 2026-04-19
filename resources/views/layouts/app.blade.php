@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +16,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <title>@yield('title', 'Wish Bakery')</title>
-  
+
   <!-- CSRF Token -->
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -23,7 +24,31 @@
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
   <link rel="stylesheet" href="{{ asset('css/products.css') }}">
   <link rel="stylesheet" href="{{ asset('css/about.css') }}">
-  
+
+  <!-- ✅ Critical CSS Fallback -->
+  <style>
+    :root {
+      --color-bg: #FFF7F2;
+      --color-surface: #FFFFFF;
+      --color-primary: #E83F6F;
+      --color-primary-600: #C22E59;
+      --color-secondary: #FFB703;
+      --color-accent: #2A9D8F;
+      --color-neutral-900: #2E2A27;
+      --color-neutral-700: #4B3A36;
+      --color-neutral-500: #8D7B73;
+      --color-border: #E6DAD2;
+      --radius-sm: 8px;
+      --radius-lg: 16px;
+    }
+
+    body {
+      background: var(--color-bg, #FFF7F2);
+      color: var(--color-neutral-900, #2E2A27);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Ubuntu, 'Helvetica Neue', Arial, sans-serif;
+    }
+  </style>
+
   @stack('styles')
 </head>
 
@@ -49,4 +74,5 @@
 
   @stack('scripts')
 </body>
+
 </html>

@@ -12,56 +12,71 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::query();
+        try {
+            $query = Product::query();
 
-        // Get all categories with their slugs for the filter
-        $allCategories = Product::withTrashed()
-            ->select('category')
-            ->distinct()
-            ->orderBy('category')
-            ->get()
-            ->mapWithKeys(function($item) {
-                $slug = strtolower(str_replace(' ', '-', $item->category));
-                return [$slug => $item->category];
-            });
+            // Get all categories with their slugs for the filter
+            $allCategories = Product::withTrashed()
+                ->select('category')
+                ->distinct()
+                ->orderBy('category')
+                ->get()
+                ->mapWithKeys(function ($item) {
+                    $slug = strtolower(str_replace(' ', '-', $item->category));
+                    return [$slug => $item->category];
+                });
+        } catch (\Exception $e) {
+            // If database is not ready, return empty collections
+            $allCategories = collect([]);
+            $query = Product::query();
+        }
 
-        // Filter by category if specified
-        $selectedCategory = null;
-        if ($categorySlug = $request->input('category')) {
-            // Find the actual category name from the slug
-            $selectedCategory = $allCategories->get($categorySlug);
-            if ($selectedCategory) {
-                $query->where('category', $selectedCategory);
+        try {
+            // Filter by category if specified
+            $selectedCategory = null;
+            if ($categorySlug = $request->input('category')) {
+                // Find the actual category name from the slug
+                $selectedCategory = $allCategories->get($categorySlug);
+                if ($selectedCategory) {
+                    $query->where('category', $selectedCategory);
+                }
             }
+
+            // Search functionality
+            if ($search = $request->input('search')) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+                });
+            }
+
+            // Filter out inactive products
+            $query->where('is_active', true);
+
+            // Sorting
+            $sort = $request->input('sort');
+            if ($sort === 'price_asc') {
+                $query->orderBy('price');
+            } elseif ($sort === 'price_desc') {
+                $query->orderByDesc('price');
+            } else {
+                $query->latest();
+            }
+
+            $products = $query->paginate(12)
+                ->appends([
+                    'search' => $request->search,
+                    'category' => $request->category,
+                    'sort' => $request->sort
+                ]);
+        } catch (\Exception $e) {
+            // If database queries fail, return empty products
+            $products = new \Illuminate\Pagination\LengthAwarePaginator(
+                collect([]),
+                0,
+                12
+            );
         }
-
-        // Search functionality
-        if ($search = $request->input('search')) {
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        // Filter out inactive products
-        $query->where('is_active', true);
-
-        // Sorting
-        $sort = $request->input('sort');
-        if ($sort === 'price_asc') {
-            $query->orderBy('price');
-        } elseif ($sort === 'price_desc') {
-            $query->orderByDesc('price');
-        } else {
-            $query->latest();
-        }
-
-        $products = $query->paginate(12)
-            ->appends([
-                'search' => $request->search,
-                'category' => $request->category,
-                'sort' => $request->sort
-            ]);
 
         return view('products', [
             'products' => $products,
