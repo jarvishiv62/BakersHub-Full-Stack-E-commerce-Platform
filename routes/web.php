@@ -29,6 +29,7 @@ Route::get('/debug-env', function () {
         'APP_KEY' => env('APP_KEY', 'NOT_SET') ? 'SET' : 'NOT_SET',
         'DB_CONNECTION' => env('DB_CONNECTION', 'NOT_SET'),
         'DB_HOST' => env('DB_HOST', 'NOT_SET'),
+        'DB_HOST_CHECK' => env('DB_HOST_CHECK', 'NOT_SET'),
         'DB_DATABASE' => env('DB_DATABASE', 'NOT_SET'),
         'CACHE_DRIVER' => env('CACHE_DRIVER', 'NOT_SET'),
     ];

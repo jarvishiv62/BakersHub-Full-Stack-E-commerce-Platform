@@ -54,6 +54,10 @@ services:
       - key: DB_PASSWORD
         value: ""
 
+      # FORCE ENV DEBUG
+      - key: DB_HOST_CHECK
+        value: dpg-cf1a7l62dvs43d7l9vg-a.internal
+
       # 🔥 TEMP SAFE SETTINGS (avoid Redis crash)
       - key: CACHE_DRIVER
         value: file
