@@ -80,6 +80,40 @@ Route::get('/debug-db-status', function () {
     }
 });
 
+// Network connectivity test
+Route::get('/debug-network', function () {
+    $host = env('DB_HOST');
+    $port = env('DB_PORT', 3306);
+
+    $result = [
+        'host' => $host,
+        'port' => $port,
+        'dns_lookup' => false,
+        'port_test' => false,
+        'error' => null
+    ];
+
+    // Test DNS lookup
+    $ip = gethostbyname($host);
+    if ($ip !== $host) {
+        $result['dns_lookup'] = true;
+        $result['ip'] = $ip;
+
+        // Test port connection
+        $connection = @fsockopen($host, $port, $errno, $errstr, 5);
+        if ($connection) {
+            $result['port_test'] = true;
+            fclose($connection);
+        } else {
+            $result['error'] = "Port $port: $errstr ($errno)";
+        }
+    } else {
+        $result['error'] = "DNS lookup failed for $host";
+    }
+
+    return $result;
+});
+
 // =============================
 // Authentication Routes
 // =============================
