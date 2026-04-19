@@ -40,7 +40,7 @@ services:
         value: mysql
 
       - key: DB_HOST
-        value: dpg-cf1a7l62dvs43d7l9vg-a.internal
+        value: srv-d7h87g3bc2fs738q59p0
 
       - key: DB_PORT
         value: 3306
@@ -56,7 +56,7 @@ services:
 
       # FORCE ENV DEBUG
       - key: DB_HOST_CHECK
-        value: dpg-cf1a7l62dvs43d7l9vg-a.internal
+        value: srv-d7h87g3bc2fs738q59p0
 
       # 🔥 TEMP SAFE SETTINGS (avoid Redis crash)
       - key: CACHE_DRIVER
